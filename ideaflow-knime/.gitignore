@@ -1,0 +1,27 @@
+# Java, Maven, Tycho, and PDE build output
+**/bin/
+**/target/
+**/.build-*/
+IDEAFlow/ideaflow.jar
+
+# Eclipse workspace-local state (project metadata remains tracked)
+**/.metadata/
+**/*.launch
+**/.classpath.bak
+
+# Codex/local analysis scratch data
+**/.codex-*/
+
+# Logs, temporary files, and operating-system noise
+**/*.log
+**/*.tmp
+**/*.bak
+**/*.orig
+**/*.rej
+**/*~
+.DS_Store
+Thumbs.db
+
+# Other IDE-local configuration
+.idea/
+.vscode/

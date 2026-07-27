@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.ideaflow.feature_0.0.0.jar" id="org.ideaflow.feature" version="0.0.0">
+      <category name="ideaflow"/>
+   </feature>
+   <category-def name="ideaflow" label="IdeaFlow Evolutionary Optimization">
+      <description>Workflow-native evolutionary and metaheuristic optimization nodes.</description>
+   </category-def>
+</site>

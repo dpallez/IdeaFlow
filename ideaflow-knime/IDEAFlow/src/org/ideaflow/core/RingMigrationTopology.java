@@ -1,0 +1,2 @@
+package org.ideaflow.core;import java.util.*;import org.ideaflow.api.Candidate;import org.ideaflow.spi.*;
+public final class RingMigrationTopology implements MigrationTopology{public String id(){return "migration.ring";}public String displayName(){return "Ring migration";}public CapabilityDescriptor capabilities(){return CapabilityDescriptor.general();}public Map<String,List<Candidate>> migrate(Map<String,List<Candidate>> p,int n){return IslandMigration.ring(p,n);}}

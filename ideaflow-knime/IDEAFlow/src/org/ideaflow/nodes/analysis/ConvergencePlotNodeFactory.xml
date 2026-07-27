@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="../../../default.png" type="Visualizer">
+  <name>Convergence Plot</name>
+  <shortDescription>Displays one optimization convergence curve per series.</shortDescription>
+  <fullDescription>
+    <intro>Plots the median performance over the evaluation budget for every algorithm or method. When Q1 and Q3 are present, the shaded band shows the interquartile range across runs. It consumes the Convergence output of Optimization Run Analysis directly, without pivoting or additional KNIME plot nodes.</intro>
+  </fullDescription>
+  <ports>
+    <inPort index="0" name="Convergence">Convergence table from Optimization Run Analysis.</inPort>
+  </ports>
+</knimeNode>

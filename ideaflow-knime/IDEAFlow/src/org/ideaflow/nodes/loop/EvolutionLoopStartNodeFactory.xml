@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="../../../default.png" type="Other">
+  <name>Optimization Loop Start</name>
+  <shortDescription>Starts an IdeaFlow optimization loop.</shortDescription>
+  <fullDescription><intro>Place this node after the initial population has been evaluated. On later passes it returns the population fed back by Optimization Loop End.</intro></fullDescription>
+  <ports>
+    <inPort index="0" name="Initial population">Initially evaluated population.</inPort>
+    <outPort index="0" name="Current population">Population for the current optimization pass.</outPort>
+  </ports>
+</knimeNode>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="../../../default.png" type="Sink">
+  <name>Export to IOHprofiler</name>
+  <shortDescription>Exports optimization history in IOHprofiler format.</shortDescription>
+  <fullDescription><intro>Reads problem name, dimension and objective direction from Problem Setup, then writes IOH .info, improvement .dat, optional complete .cdat, and a lossless IdeaFlow companion event file.</intro></fullDescription>
+  <ports><inPort index="0" name="Optimization history">Evaluation or monitor events.</inPort><outPort index="0" name="Export summary">Written path and event count.</outPort></ports>
+</knimeNode>

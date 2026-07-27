@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="../../../default.png" type="Manipulator">
+  <name>Selection</name>
+  <shortDescription>Selects mating parents or prepares Differential Evolution donors.</shortDescription>
+  <fullDescription><intro>Automatically reads objectives, directions, constraints, variables, and bounds from Problem Setup. Tournament and random modes select ordinary mating parents. Differential Evolution mode keeps one target row per individual and attaches hidden donor information for the Mutation and Crossover nodes.</intro></fullDescription>
+  <ports><inPort index="0" name="Population">Evaluated population.</inPort><inPort index="1" name="DE archive (optional)">Optional SHADE/L-SHADE archive; ignored by ordinary selection.</inPort><outPort index="0" name="Selected candidates">Mating parents or DE target/donor bundles.</outPort></ports>
+</knimeNode>

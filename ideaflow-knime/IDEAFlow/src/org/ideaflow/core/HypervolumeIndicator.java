@@ -1,0 +1,2 @@
+package org.ideaflow.core;import java.util.List;import org.ideaflow.api.*;import org.ideaflow.spi.*;
+public final class HypervolumeIndicator implements QualityIndicator{public String id(){return "indicator.hypervolume";}public String displayName(){return "Dominated hypervolume";}public CapabilityDescriptor capabilities(){return CapabilityDescriptor.general();}public double compute(List<Candidate> p,List<ObjectiveDefinition> o,double[] r){return Hypervolume.compute(p,o,r);}}

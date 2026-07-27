@@ -1,0 +1,2 @@
+package org.ideaflow.core;import java.util.Set;import java.util.random.RandomGenerator;import org.ideaflow.api.VariableType;import org.ideaflow.spi.*;
+public final class ClampBoundsRepair implements BoundsRepair{public String id(){return "bounds.clamp";}public String displayName(){return "Clamp to bounds";}public CapabilityDescriptor capabilities(){return new CapabilityDescriptor(Set.of(VariableType.REAL,VariableType.INTEGER),1,true,Set.of());}public double repair(double v,double l,double u,RandomGenerator r){return Math.max(l,Math.min(u,v));}}

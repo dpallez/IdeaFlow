@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="../../../default.png" type="Manipulator">
+  <name>Reference Directions</name>
+  <shortDescription>Creates Das-Dennis reference directions.</shortDescription>
+  <fullDescription>
+    <intro>Reads the number of objectives automatically from Problem Setup and creates a simplex lattice using the selected number of divisions.</intro>
+  </fullDescription>
+  <ports>
+    <inPort index="0" name="Problem or population">Any table carrying Problem Setup metadata.</inPort>
+    <outPort index="0" name="Reference directions">One normalized direction per row.</outPort>
+  </ports>
+</knimeNode>

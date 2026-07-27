@@ -1,0 +1,2 @@
+package org.ideaflow.core;import java.util.List;import org.ideaflow.api.*;import org.ideaflow.spi.*;
+public final class DefaultRankingStrategy implements RankingStrategy{public String id(){return "ranking.fast-nondominated";}public String displayName(){return "Fast nondominated sorting";}public CapabilityDescriptor capabilities(){return CapabilityDescriptor.general();}public List<List<Integer>> rank(List<Candidate> p,List<ObjectiveDefinition> o){return FastNonDominatedSort.sort(p,o);}}

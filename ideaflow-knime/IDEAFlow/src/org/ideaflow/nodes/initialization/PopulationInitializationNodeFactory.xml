@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="../../../default.png" type="Manipulator">
+  <name>Initial Population</name>
+  <shortDescription>Creates reproducible candidate populations from the problem definition.</shortDescription>
+  <fullDescription><intro>Reads the combined output from Problem Setup and creates the initial population.</intro></fullDescription>
+  <ports><inPort index="0" name="Problem setup">Output from Problem Setup.</inPort><outPort index="0" name="Initial population">Unevaluated candidates.</outPort></ports>
+</knimeNode>

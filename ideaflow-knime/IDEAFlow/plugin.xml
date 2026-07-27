@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension point="org.knime.core.DataType">
+      <DataType cellClass="org.ideaflow.api.IdeaFlowStateCell">
+         <serializer cellClass="org.ideaflow.api.IdeaFlowStateCell"
+               serializerClass="org.ideaflow.api.IdeaFlowStateCell$Serializer"/>
+      </DataType>
+   </extension>
+
+   <extension point="org.knime.workbench.repository.categories">
+      <category description="Visual evolutionary optimization workflows" icon="src/org/ideaflow/default.png"
+            level-id="IDEAFlow" name="IDEAFlow" path="/"/>
+      <category description="Set up optimization experiments and populations" icon="src/org/ideaflow/default.png"
+            level-id="Setup" name="Setup" path="/IDEAFlow"/>
+      <category description="Start and stop optimization using the NFE budget" icon="src/org/ideaflow/default.png"
+            level-id="Loops" name="Loops" path="/IDEAFlow"/>
+      <category description="Selection, variation, and survivor operators" icon="src/org/ideaflow/default.png"
+            level-id="Operators" name="Operators" path="/IDEAFlow"/>
+      <category description="Evaluate built-in, formula, or externally calculated problems" icon="src/org/ideaflow/default.png"
+            level-id="Evaluation" name="Evaluation" path="/IDEAFlow"/>
+      <category description="Pareto ranking, archives, reference directions, and reference-front indicators" icon="src/org/ideaflow/default.png"
+            level-id="MultiObjective" name="Multi-Objective" path="/IDEAFlow"/>
+      <category description="Coordinate and exchange candidates between populations" icon="src/org/ideaflow/default.png"
+            level-id="MultiplePopulations" name="Multiple Populations" path="/IDEAFlow"/>
+      <category description="Optional progress tracking and detailed diagnostics" icon="src/org/ideaflow/default.png"
+            level-id="Analysis" name="Analysis" path="/IDEAFlow"/>
+      <category description="Write optimization histories to external formats" icon="src/org/ideaflow/default.png"
+            level-id="Export" name="Export" path="/IDEAFlow"/>
+   </extension>
+
+   <extension point="org.knime.workbench.repository.nodes">
+      <!-- Beginner-facing catalog. -->
+      <node category-path="/IDEAFlow/Setup" factory-class="org.ideaflow.nodes.problem.ProblemDefinitionNodeFactory"/>
+      <node category-path="/IDEAFlow/Setup" factory-class="org.ideaflow.nodes.initialization.PopulationInitializationNodeFactory"/>
+
+      <node category-path="/IDEAFlow/Loops" factory-class="org.ideaflow.nodes.loop.EvolutionLoopStartNodeFactory"/>
+      <node category-path="/IDEAFlow/Loops" factory-class="org.ideaflow.nodes.loop.EvolutionLoopEndNodeFactory"/>
+
+      <node category-path="/IDEAFlow/Operators" factory-class="org.ideaflow.nodes.selection.ParentSelectionNodeFactory"/>
+      <node category-path="/IDEAFlow/Operators" factory-class="org.ideaflow.nodes.variation.RecombinationNodeFactory"/>
+      <node category-path="/IDEAFlow/Operators" factory-class="org.ideaflow.nodes.variation.MutationNodeFactory"/>
+      <node category-path="/IDEAFlow/Operators" factory-class="org.ideaflow.nodes.update.PopulationUpdateNodeFactory"/>
+
+      <node category-path="/IDEAFlow/Evaluation" factory-class="org.ideaflow.nodes.benchmark.BenchmarkEvaluatorNodeFactory"/>
+
+      <node category-path="/IDEAFlow/MultiObjective" factory-class="org.ideaflow.nodes.multiobjective.ParetoRankingNodeFactory"/>
+      <node category-path="/IDEAFlow/MultiObjective" factory-class="org.ideaflow.nodes.reference.ReferenceDirectionsNodeFactory"/>
+      <node category-path="/IDEAFlow/MultiObjective" factory-class="org.ideaflow.nodes.archive.ExternalArchiveNodeFactory"/>
+      <node category-path="/IDEAFlow/MultiObjective" factory-class="org.ideaflow.nodes.metrics.ReferenceIndicatorsNodeFactory"/>
+
+      <node category-path="/IDEAFlow/MultiplePopulations" factory-class="org.ideaflow.nodes.migration.PopulationMigrationNodeFactory"/>
+
+      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.monitor.OptimizationMonitorNodeFactory"/>
+      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.analysis.OptimizationRunAnalysisNodeFactory"/>
+      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.analysis.ConvergencePlotNodeFactory"/>
+      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.analysis.EcdfPlotNodeFactory"/>
+      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.trace.EvolutionTraceNodeFactory"/>
+
+      <node category-path="/IDEAFlow/Export" factory-class="org.ideaflow.nodes.io.IohProfilerExportNodeFactory"/>
+
+   </extension>
+</plugin>

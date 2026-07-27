@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.ideaflow.feature"
+      label="IdeaFlow Evolutionary Optimization"
+      version="2.0.0.qualifier"
+      provider-name="IdeaFlow contributors">
+   <description>
+      General-purpose, workflow-native evolutionary and metaheuristic optimization for KNIME.
+   </description>
+   <copyright>
+      Copyright (c) 2026 IdeaFlow contributors.
+   </copyright>
+   <license url="https://www.apache.org/licenses/LICENSE-2.0">
+      Licensed under the Apache License, Version 2.0.
+   </license>
+   <plugin
+         id="org.ideaflow"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+</feature>

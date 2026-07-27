@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: IDEAFlow-Node extension for KNIME Workbench
+Bundle-SymbolicName: org.ideaflow; singleton:=true
+Bundle-Version: 2.0.0.qualifier
+Bundle-ClassPath: ideaflow.jar
+Bundle-Activator: org.ideaflow.IdeaFlowNodePlugin
+Bundle-Vendor: IdeaFlow contributors
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.core.ui,
+ org.knime.base
+Bundle-ActivationPolicy: lazy
+Export-Package: org.ideaflow,
+ org.ideaflow.api,
+ org.ideaflow.spi
+Import-Package: org.osgi.framework
+Bundle-RequiredExecutionEnvironment: JavaSE-21
