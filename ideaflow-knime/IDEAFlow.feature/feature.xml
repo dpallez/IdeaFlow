@@ -2,7 +2,7 @@
 <feature
       id="org.ideaflow.feature"
       label="IdeaFlow Evolutionary Optimization"
-      version="2.0.0.qualifier"
+      version="0.1.0.qualifier"
       provider-name="IdeaFlow contributors">
    <description>
       General-purpose, workflow-native evolutionary and metaheuristic optimization for KNIME.
@@ -17,6 +17,6 @@
          id="org.ideaflow"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.1.0.qualifier"
          unpack="false"/>
 </feature>

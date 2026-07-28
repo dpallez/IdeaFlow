@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Optimization Loop Start node description. -->
+<knimeNode icon="../../../default.png" type="Other">
+  <name>Optimization Loop Start</name>
+  <shortDescription>Starts an IdeaFlow optimization loop.</shortDescription>
+  <fullDescription><intro>Place this node after the initial population has been evaluated. The first pass starts with an empty donor archive; later passes return the active population and the SHADE/L-SHADE archive maintained internally by Optimization Loop End.</intro></fullDescription>
+  <ports>
+    <inPort index="0" name="Initial population">Initially evaluated population.</inPort>
+    <outPort index="0" name="Current population">Population for the current optimization pass.</outPort>
+    <outPort index="1" name="Current archive">External DE archive for donor selection during the current pass.</outPort>
+  </ports>
+</knimeNode>

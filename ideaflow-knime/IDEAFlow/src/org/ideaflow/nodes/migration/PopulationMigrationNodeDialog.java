@@ -11,6 +11,10 @@ final class PopulationMigrationNodeDialog extends DefaultNodeSettingsPane {
         addDialogComponent(new DialogComponentNumber(
             new SettingsModelIntegerBounded(PopulationMigrationNodeModel.CFG_COUNT, 1, 1, Integer.MAX_VALUE),
             "Migrants per population", 1));
+        addDialogComponent(new DialogComponentNumber(
+            new SettingsModelIntegerBounded(
+                PopulationMigrationNodeModel.CFG_INTERVAL, 10, 1, Integer.MAX_VALUE),
+            "Migrate every N generations", 1));
         addDialogComponent(new DialogComponentStringSelection(
             new SettingsModelString(PopulationMigrationNodeModel.CFG_TOPOLOGY, "RING"),
             "Migration topology", "RING", "RANDOM", "ALL_TO_ALL"));

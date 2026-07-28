@@ -1,62 +1,63 @@
 package org.ideaflow.core;
 
 import java.util.Arrays;
-import java.util.random.RandomGenerator;
+import java.util.List;
 
-/** Success-history memory shared by SHADE and L-SHADE recipes. */
+/** Canonical SHADE success-history memory update, independent of KNIME row storage. */
 public final class ShadeMemory {
-    private final double[] fMemory;
-    private final double[] crMemory;
-    private int index;
-
-    public ShadeMemory(final int size, final double initialF, final double initialCr) {
-        if (size < 1) throw new IllegalArgumentException("Memory size must be positive.");
-        fMemory = new double[size];
-        crMemory = new double[size];
-        Arrays.fill(fMemory, initialF);
-        Arrays.fill(crMemory, initialCr);
-    }
-
-    public Sample sample(final RandomGenerator random) {
-        final int slot = random.nextInt(fMemory.length);
-        double f;
-        do { f = fMemory[slot] + 0.1 * Math.tan(Math.PI * (random.nextDouble() - 0.5)); }
-        while (f <= 0.0);
-        f = Math.min(1.0, f);
-        final double cr = Math.max(0.0, Math.min(1.0, crMemory[slot] + 0.1 * gaussian(random)));
-        return new Sample(f, cr, slot);
-    }
-
-    public void update(final double[] successfulF, final double[] successfulCr, final double[] improvements) {
-        if (successfulF.length == 0) return;
-        if (successfulF.length != successfulCr.length || successfulF.length != improvements.length) {
-            throw new IllegalArgumentException("Successful parameter arrays must have equal lengths.");
+    public record State(double[] f, double[] cr, int index) {
+        public State {
+            if (f == null || cr == null || f.length == 0 || f.length != cr.length) {
+                throw new IllegalArgumentException("SHADE memory arrays must have the same positive length.");
+            }
+            f = f.clone();
+            cr = cr.clone();
+            index = Math.floorMod(index, f.length);
         }
-        double weightSum = 0.0;
-        for (double improvement : improvements) weightSum += Math.max(0.0, improvement);
+
+        @Override public double[] f() { return f.clone(); }
+        @Override public double[] cr() { return cr.clone(); }
+    }
+
+    public record Success(double f, double cr, double improvement) {
+        public Success {
+            if (!Double.isFinite(f) || f <= 0.0 || !Double.isFinite(cr)
+                    || cr < 0.0 || cr > 1.0 || !Double.isFinite(improvement)
+                    || improvement <= 0.0) {
+                throw new IllegalArgumentException("Invalid successful SHADE parameters.");
+            }
+        }
+    }
+
+    private ShadeMemory() { }
+
+    public static State initial(final int size, final double initialF, final double initialCr) {
+        if (size < 1) throw new IllegalArgumentException("SHADE memory size must be positive.");
+        final double[] f = new double[size];
+        final double[] cr = new double[size];
+        Arrays.fill(f, initialF);
+        Arrays.fill(cr, initialCr);
+        return new State(f, cr, 0);
+    }
+
+    public static State update(final State current, final List<Success> successes) {
+        if (successes == null || successes.isEmpty()) return current;
+        double improvementSum = 0.0;
         double fNumerator = 0.0;
         double fDenominator = 0.0;
-        double crMean = 0.0;
-        for (int i = 0; i < successfulF.length; i++) {
-            final double weight = weightSum == 0.0 ? 1.0 / successfulF.length
-                    : Math.max(0.0, improvements[i]) / weightSum;
-            fNumerator += weight * successfulF[i] * successfulF[i];
-            fDenominator += weight * successfulF[i];
-            crMean += weight * successfulCr[i];
+        double crNumerator = 0.0;
+        for (Success success : successes) {
+            final double weight = success.improvement();
+            improvementSum += weight;
+            fNumerator += weight * success.f() * success.f();
+            fDenominator += weight * success.f();
+            crNumerator += weight * success.cr();
         }
-        if (fDenominator > 0.0) fMemory[index] = fNumerator / fDenominator;
-        crMemory[index] = crMean;
-        index = (index + 1) % fMemory.length;
-    }
-
-    public double[] fMemory() { return fMemory.clone(); }
-    public double[] crMemory() { return crMemory.clone(); }
-    public int index() { return index; }
-
-    public record Sample(double f, double cr, int memoryIndex) { }
-
-    private static double gaussian(final RandomGenerator random) {
-        final double u1 = Math.max(Double.MIN_NORMAL, random.nextDouble());
-        return Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * random.nextDouble());
+        if (!(improvementSum > 0.0) || !(fDenominator > 0.0)) return current;
+        final double[] f = current.f();
+        final double[] cr = current.cr();
+        f[current.index()] = fNumerator / fDenominator;
+        cr[current.index()] = crNumerator / improvementSum;
+        return new State(f, cr, (current.index() + 1) % f.length);
     }
 }

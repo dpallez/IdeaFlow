@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: IDEAFlow Tests
+Bundle-SymbolicName: org.ideaflow.tests
+Bundle-Version: 0.1.0.qualifier
+Fragment-Host: org.ideaflow
+Require-Bundle: junit-jupiter-api
+Bundle-RequiredExecutionEnvironment: JavaSE-21

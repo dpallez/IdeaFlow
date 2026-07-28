@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Optimization Loop End node description. -->
+<knimeNode icon="../../../default.png" type="Other">
+  <name>Optimization Loop End</name>
+  <shortDescription>Stops the optimization loop at the NFE budget or configured objective targets.</shortDescription>
+  <fullDescription><intro>Feeds survivors back to Optimization Loop Start and internally maintains a bounded FIFO archive from replaced DE parents for SHADE/L-SHADE. The run-wide NFE budget is a strict ceiling: the loop stops before another complete generation when that batch would not fit. Only the active population controls NFE and objective-target stopping. Connect Track Progress's summary output to retain one compact convergence row per run, population, and loop pass.</intro></fullDescription>
+  <ports>
+    <inPort index="0" name="Next population">Evaluated survivors for the next optimization pass.</inPort>
+    <inPort index="1" name="Replaced DE parents (optional)">Connect Elitism's rejected-or-replaced output for SHADE/L-SHADE. The loop merges these parents into its internal FIFO archive and limits it to the active population size.</inPort>
+    <inPort index="2" name="Progress summary (optional)">Track Progress summary for the current loop pass. Leave disconnected when convergence history is not needed.</inPort>
+    <outPort index="0" name="Final population">Population returned when optimization finishes.</outPort>
+    <outPort index="1" name="Run summary">NFE, best value and stop reason.</outPort>
+    <outPort index="2" name="Convergence history">All connected progress summaries accumulated across the completed loop.</outPort>
+  </ports>
+</knimeNode>

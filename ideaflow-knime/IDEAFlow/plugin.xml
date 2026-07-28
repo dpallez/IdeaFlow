@@ -19,7 +19,7 @@
             level-id="Operators" name="Operators" path="/IDEAFlow"/>
       <category description="Evaluate built-in, formula, or externally calculated problems" icon="src/org/ideaflow/default.png"
             level-id="Evaluation" name="Evaluation" path="/IDEAFlow"/>
-      <category description="Pareto ranking, archives, reference directions, and reference-front indicators" icon="src/org/ideaflow/default.png"
+      <category description="Pareto ranking, reference directions, and reference-front indicators" icon="src/org/ideaflow/default.png"
             level-id="MultiObjective" name="Multi-Objective" path="/IDEAFlow"/>
       <category description="Coordinate and exchange candidates between populations" icon="src/org/ideaflow/default.png"
             level-id="MultiplePopulations" name="Multiple Populations" path="/IDEAFlow"/>
@@ -31,33 +31,32 @@
 
    <extension point="org.knime.workbench.repository.nodes">
       <!-- Beginner-facing catalog. -->
-      <node category-path="/IDEAFlow/Setup" factory-class="org.ideaflow.nodes.problem.ProblemDefinitionNodeFactory"/>
-      <node category-path="/IDEAFlow/Setup" factory-class="org.ideaflow.nodes.initialization.PopulationInitializationNodeFactory"/>
+      <node category-path="/IDEAFlow/Setup" factory-class="org.ideaflow.nodes.problem.ProblemSetupNodeFactory"/>
+      <node category-path="/IDEAFlow/Setup" factory-class="org.ideaflow.nodes.initialization.InitialPopulationNodeFactory"/>
 
-      <node category-path="/IDEAFlow/Loops" factory-class="org.ideaflow.nodes.loop.EvolutionLoopStartNodeFactory"/>
-      <node category-path="/IDEAFlow/Loops" factory-class="org.ideaflow.nodes.loop.EvolutionLoopEndNodeFactory"/>
+      <node category-path="/IDEAFlow/Loops" factory-class="org.ideaflow.nodes.loop.start.OptimizationLoopStartNodeFactory"/>
+      <node category-path="/IDEAFlow/Loops" factory-class="org.ideaflow.nodes.loop.end.OptimizationLoopEndNodeFactory"/>
 
-      <node category-path="/IDEAFlow/Operators" factory-class="org.ideaflow.nodes.selection.ParentSelectionNodeFactory"/>
-      <node category-path="/IDEAFlow/Operators" factory-class="org.ideaflow.nodes.variation.RecombinationNodeFactory"/>
-      <node category-path="/IDEAFlow/Operators" factory-class="org.ideaflow.nodes.variation.MutationNodeFactory"/>
-      <node category-path="/IDEAFlow/Operators" factory-class="org.ideaflow.nodes.update.PopulationUpdateNodeFactory"/>
+      <node category-path="/IDEAFlow/Operators" factory-class="org.ideaflow.nodes.selection.SelectionNodeFactory"/>
+      <node category-path="/IDEAFlow/Operators" factory-class="org.ideaflow.nodes.variation.recombination.CrossoverNodeFactory"/>
+      <node category-path="/IDEAFlow/Operators" factory-class="org.ideaflow.nodes.variation.mutation.MutationNodeFactory"/>
+      <node category-path="/IDEAFlow/Operators" factory-class="org.ideaflow.nodes.update.ElitismNodeFactory"/>
 
-      <node category-path="/IDEAFlow/Evaluation" factory-class="org.ideaflow.nodes.benchmark.BenchmarkEvaluatorNodeFactory"/>
+      <node category-path="/IDEAFlow/Evaluation" factory-class="org.ideaflow.nodes.benchmark.EvaluationNodeFactory"/>
 
-      <node category-path="/IDEAFlow/MultiObjective" factory-class="org.ideaflow.nodes.multiobjective.ParetoRankingNodeFactory"/>
+      <node category-path="/IDEAFlow/MultiObjective" factory-class="org.ideaflow.nodes.multiobjective.RankParetoSolutionsNodeFactory"/>
       <node category-path="/IDEAFlow/MultiObjective" factory-class="org.ideaflow.nodes.reference.ReferenceDirectionsNodeFactory"/>
-      <node category-path="/IDEAFlow/MultiObjective" factory-class="org.ideaflow.nodes.archive.ExternalArchiveNodeFactory"/>
-      <node category-path="/IDEAFlow/MultiObjective" factory-class="org.ideaflow.nodes.metrics.ReferenceIndicatorsNodeFactory"/>
+      <node category-path="/IDEAFlow/MultiObjective" factory-class="org.ideaflow.nodes.metrics.CompareParetoFrontsNodeFactory"/>
 
       <node category-path="/IDEAFlow/MultiplePopulations" factory-class="org.ideaflow.nodes.migration.PopulationMigrationNodeFactory"/>
 
-      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.monitor.OptimizationMonitorNodeFactory"/>
-      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.analysis.OptimizationRunAnalysisNodeFactory"/>
-      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.analysis.ConvergencePlotNodeFactory"/>
-      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.analysis.EcdfPlotNodeFactory"/>
-      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.trace.EvolutionTraceNodeFactory"/>
+      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.monitor.TrackProgressNodeFactory"/>
+      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.analysis.run.OptimizationRunAnalysisNodeFactory"/>
+      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.analysis.convergence.ConvergencePlotNodeFactory"/>
+      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.analysis.ecdf.EcdfPlotNodeFactory"/>
+      <node category-path="/IDEAFlow/Analysis" factory-class="org.ideaflow.nodes.trace.RecordPopulationNodeFactory"/>
 
-      <node category-path="/IDEAFlow/Export" factory-class="org.ideaflow.nodes.io.IohProfilerExportNodeFactory"/>
+      <node category-path="/IDEAFlow/Export" factory-class="org.ideaflow.nodes.io.ExportToIohProfilerNodeFactory"/>
 
    </extension>
 </plugin>

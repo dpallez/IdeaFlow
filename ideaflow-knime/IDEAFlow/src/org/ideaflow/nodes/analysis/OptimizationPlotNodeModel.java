@@ -17,24 +17,24 @@ import org.knime.core.node.ExecutionMonitor;
 import org.knime.core.node.NodeModel;
 
 /** Shared storage and persistence for the two terminal optimization plot nodes. */
-abstract class OptimizationPlotNodeModel extends NodeModel {
+public abstract class OptimizationPlotNodeModel extends NodeModel {
     private static final String DATA_FILE = "plot-data.bin";
     private volatile OptimizationPlotData m_plot;
 
-    OptimizationPlotNodeModel(final OptimizationPlotData initial) {
+    protected OptimizationPlotNodeModel(final OptimizationPlotData initial) {
         super(1, 0);
         m_plot = initial;
     }
 
-    final OptimizationPlotData plotData() {
+    public final OptimizationPlotData plotData() {
         return m_plot;
     }
 
-    final void setPlotData(final OptimizationPlotData plot) {
+    protected final void setPlotData(final OptimizationPlotData plot) {
         m_plot = plot;
     }
 
-    abstract OptimizationPlotData emptyPlot();
+    protected abstract OptimizationPlotData emptyPlot();
 
     @Override
     protected final void reset() {

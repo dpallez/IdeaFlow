@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ECDF Plot node description. -->
+<knimeNode icon="../../../default.png" type="Visualizer">
+  <name>ECDF Plot</name>
+  <shortDescription>Displays exact final-fitness ECDF curves by series.</shortDescription>
+  <fullDescription>
+    <intro>Plots final fitness on the horizontal axis and the fraction of runs at or below that value on the vertical axis. The curves use exact empirical-CDF steps and consume the ECDF output of Optimization Run Analysis directly. For minimization problems, curves farther left indicate better final results.</intro>
+  </fullDescription>
+  <ports>
+    <inPort index="0" name="Final-fitness ECDF">Final-fitness ECDF table from Optimization Run Analysis.</inPort>
+  </ports>
+</knimeNode>

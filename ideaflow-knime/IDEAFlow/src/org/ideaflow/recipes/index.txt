@@ -1,8 +1,0 @@
-ga
-nsga2
-nsga3
-de
-gde3
-jde
-shade
-lshade

@@ -4,11 +4,12 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.ideaflow</groupId>
   <artifactId>ideaflow-releng</artifactId>
-  <version>2.0.0-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
     <module>IDEAFlow</module>
+    <module>IDEAFlow.tests</module>
     <module>IDEAFlow.feature</module>
     <module>IDEAFlow.update</module>
   </modules>

@@ -17,7 +17,7 @@ import java.util.List;
 import javax.swing.JPanel;
 
 /** Lightweight responsive Swing renderer with exact ECDF steps and convergence quartile bands. */
-final class OptimizationPlotPanel extends JPanel {
+public final class OptimizationPlotPanel extends JPanel {
     private static final long serialVersionUID = 1L;
     private static final Color[] COLORS = {
         new Color(46, 111, 204), new Color(222, 95, 49), new Color(42, 157, 103),
@@ -27,19 +27,19 @@ final class OptimizationPlotPanel extends JPanel {
     private static final DecimalFormat NUMBER = new DecimalFormat("0.###E0");
     private volatile OptimizationPlotData m_data;
 
-    OptimizationPlotPanel(final OptimizationPlotData data) {
+    public OptimizationPlotPanel(final OptimizationPlotData data) {
         m_data = data;
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(900, 560));
         setMinimumSize(new Dimension(500, 320));
     }
 
-    void setData(final OptimizationPlotData data) {
+    public void setData(final OptimizationPlotData data) {
         m_data = data;
         repaint();
     }
 
-    static BufferedImage renderImage(final OptimizationPlotData data, final int width,
+    public static BufferedImage renderImage(final OptimizationPlotData data, final int width,
             final int height) {
         final OptimizationPlotPanel panel = new OptimizationPlotPanel(data);
         panel.setSize(width, height);

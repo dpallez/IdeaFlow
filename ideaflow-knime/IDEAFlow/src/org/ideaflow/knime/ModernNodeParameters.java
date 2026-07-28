@@ -32,7 +32,7 @@ import org.knime.node.parameters.widget.choices.StringChoicesProvider;
 import org.knime.node.parameters.widget.choices.StringChoice;
 import org.knime.node.parameters.widget.choices.ValueSwitchWidget;
 
-/** Settings-compatible modern parameter definitions for the NodeModel-backed nodes. */
+/** Modern parameter definitions for the NodeModel-backed nodes. */
 public final class ModernNodeParameters {
     private ModernNodeParameters() { }
 
@@ -60,18 +60,6 @@ public final class ModernNodeParameters {
                     return List.<StringChoice>of();
                 }
             }).orElse(List.of());
-        }
-    }
-    public static final class ArchiveModeChoices implements StringChoicesProvider {
-        @Override public List<StringChoice> computeState(final NodeParametersInput context) {
-            return List.of(new StringChoice("PARETO", "Best Pareto solutions"),
-                new StringChoice("FIFO_UNIQUE", "Replaced DE parents - SHADE/L-SHADE"));
-        }
-    }
-    public static final class ArchiveGroupingChoices implements StringChoicesProvider {
-        @Override public List<StringChoice> computeState(final NodeParametersInput context) {
-            return List.of(new StringChoice("RUN", "One shared archive per run"),
-                new StringChoice("RUN_AND_POPULATION", "A separate archive for every population"));
         }
     }
     public static final class MigrationTopologyChoices implements StringChoicesProvider {
@@ -146,8 +134,8 @@ public final class ModernNodeParameters {
             m_key = key;
             m_default = defaultValue;
         }
-        @Override public String load(final NodeSettingsRO settings) {
-            return settings.getString(m_key, m_default);
+        @Override public String load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            return settings.getString(m_key);
         }
         @Override public void save(final String value, final NodeSettingsWO settings) {
             settings.addString(m_key, value == null ? m_default : value);
@@ -161,8 +149,8 @@ public final class ModernNodeParameters {
             m_key = key;
             m_default = defaultValue;
         }
-        @Override public Double load(final NodeSettingsRO settings) {
-            return settings.getDouble(m_key, m_default);
+        @Override public Double load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            return settings.getDouble(m_key);
         }
         @Override public void save(final Double value, final NodeSettingsWO settings) {
             settings.addDouble(m_key, value == null ? m_default : value);
@@ -176,8 +164,8 @@ public final class ModernNodeParameters {
             m_key = key;
             m_default = defaultValue;
         }
-        @Override public Integer load(final NodeSettingsRO settings) {
-            return settings.getInt(m_key, m_default);
+        @Override public Integer load(final NodeSettingsRO settings) throws InvalidSettingsException {
+            return settings.getInt(m_key);
         }
         @Override public void save(final Integer value, final NodeSettingsWO settings) {
             settings.addInt(m_key, value == null ? m_default : value);
@@ -195,7 +183,7 @@ public final class ModernNodeParameters {
             m_default = defaultValue;
         }
         @Override public E load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            final String value = settings.getString(m_key, m_default.name());
+            final String value = settings.getString(m_key);
             try {
                 return Enum.valueOf(m_type, value);
             } catch (IllegalArgumentException exception) {
@@ -245,7 +233,7 @@ public final class ModernNodeParameters {
     public static final class TargetConditionsPersistor implements NodeParametersPersistor<TargetCondition[]> {
         private static final String KEY = "target_conditions";
         @Override public TargetCondition[] load(final NodeSettingsRO settings) throws InvalidSettingsException {
-            final String encoded = settings.getString(KEY, "");
+            final String encoded = settings.getString(KEY);
             if (encoded == null || encoded.isBlank()) return new TargetCondition[0];
             final String[] items = encoded.split(",");
             final TargetCondition[] result = new TargetCondition[items.length];
@@ -277,12 +265,12 @@ public final class ModernNodeParameters {
         @Override public String[][] getConfigPaths() { return new String[][]{{KEY}}; }
     }
 
-    public static final class PopulationInitialization implements NodeParameters {
+    public static final class InitialPopulation implements NodeParameters {
         @Widget(title="Population size", description="Initial individuals created for every run.") @Persist(configKey="population_size") public int populationSize=50;
         @Widget(title="Population ID", description="Island, species, or population identifier.") @Persist(configKey="population_id") public String populationId="population-0";
     }
 
-    public static final class ParentSelection implements NodeParameters {
+    public static final class Selection implements NodeParameters {
         enum Strategy {
             @Label(value="Tournament", description="Prefer candidates that perform better.") TOURNAMENT,
             @Label(value="Random", description="Select without considering objective values.") RANDOM,
@@ -326,7 +314,7 @@ public final class ModernNodeParameters {
         @Persistor(PbestRatePersistor.class) public double pbest=0.2;
     }
 
-    public static final class Recombination implements NodeParameters {
+    public static final class Crossover implements NodeParameters {
         enum Strategy {
             @Label(value="SBX", description="Simulated binary crossover for continuous variables.") SBX,
             @Label(value="Uniform", description="Choose every value from either parent.") UNIFORM,
@@ -476,7 +464,7 @@ public final class ModernNodeParameters {
         @Persistor(BoundsRepairPersistor.class) public String repair="REFLECT";
     }
 
-    public static final class ParetoRanking implements NodeParameters {
+    public static final class RankParetoSolutions implements NodeParameters {
         // Objectives, directions, and constraint accounting come from Problem Setup.
     }
 
@@ -484,7 +472,7 @@ public final class ModernNodeParameters {
         @Widget(title="Das-Dennis divisions", description="Simplex lattice divisions.") @Persist(configKey="divisions") public int divisions=12;
     }
 
-    public static final class PopulationUpdate implements NodeParameters {
+    public static final class Elitism implements NodeParameters {
         enum Mode {
             @Label(value="Elitism", description="Keep the best candidates for one objective.") SINGLE_OBJECTIVE,
             @Label(value="DE competition", description="Each DE child competes with its target parent.") DE_PAIRWISE,
@@ -529,60 +517,9 @@ public final class ModernNodeParameters {
         @Persistor(MinimumPopulationSizePersistor.class) public int minimumPopulationSize=4;
     }
 
-    public static final class ExternalArchive implements NodeParameters {
-        @Widget(title="What should the archive remember?",
-            description="Keep the best nondominated solutions, or retain replaced parents for SHADE/L-SHADE donor sampling.")
-        @ChoicesProvider(ArchiveModeChoices.class) @Persist(configKey="archive_mode") public String mode="PARETO";
-        @Widget(title="Maximum stored candidates",
-            description="Maximum archive size. Zero keeps every eligible candidate unless a current population is connected for L-SHADE size matching.")
-        @Persist(configKey="max_size") public int maxSize=100;
-        @Widget(title="How should populations share the archive?",
-            description="Use one archive for the whole run, or keep each population's archive separate.")
-        @ChoicesProvider(ArchiveGroupingChoices.class) @Persist(configKey="grouping") public String grouping="RUN";
-    }
-
-    public static final class AdaptiveParameterController implements NodeParameters {
-        enum Mode {
-            @Label(value="Fixed F and CR") FIXED,
-            @Label(value="jDE self-adaptation") JDE,
-            @Label(value="SHADE success-history") SHADE
-        }
-        interface ModeRef extends ParameterReference<Mode> { }
-        static final class ModePersistor extends EnumNamePersistor<Mode> {
-            ModePersistor() { super("adaptation_mode", Mode.class, Mode.JDE); }
-        }
-        static final class UsesJde implements EffectPredicateProvider {
-            @Override public EffectPredicate init(final PredicateInitializer initializer) {
-                return initializer.getEnum(ModeRef.class).isOneOf(Mode.JDE);
-            }
-        }
-        static final class UsesShade implements EffectPredicateProvider {
-            @Override public EffectPredicate init(final PredicateInitializer initializer) {
-                return initializer.getEnum(ModeRef.class).isOneOf(Mode.SHADE);
-            }
-        }
-        @Widget(title="Adaptation mode", description="Fixed, jDE, or SHADE parameter control.")
-        @ValueSwitchWidget @ValueReference(ModeRef.class) @Persistor(ModePersistor.class)
-        Mode mode=Mode.JDE;
-        @Widget(title="Initial or mean F", description="Initial differential weight or SHADE memory mean.") @Persist(configKey="initial_f") public double f=0.5;
-        @Widget(title="Initial or mean CR", description="Initial crossover rate or SHADE memory mean.") @Persist(configKey="initial_cr") public double cr=0.9;
-        @Widget(title="jDE F adaptation probability", description="Probability of resampling F.")
-        @Effect(predicate=UsesJde.class, type=EffectType.SHOW)
-        @Persist(configKey="tau_f") public double tauF=0.1;
-        @Widget(title="jDE CR adaptation probability", description="Probability of resampling CR.")
-        @Effect(predicate=UsesJde.class, type=EffectType.SHOW)
-        @Persist(configKey="tau_cr") public double tauCr=0.1;
-        @Widget(title="SHADE memory size", description="Number of success-history memory entries.")
-        @Effect(predicate=UsesShade.class, type=EffectType.SHOW)
-        @Persist(configKey="memory_size") public int memorySize=6;
-    }
-
-    public static final class PopulationSizeScheduler implements NodeParameters {
-        @Widget(title="Minimum population size", description="Population size at the evaluation budget.") @Persist(configKey="minimum_size") public int minimumSize=4;
-    }
 
     /** Settings for the beginner-facing native evolutionary loop end. */
-    public static final class EvolutionLoopEnd implements NodeParameters {
+    public static final class OptimizationLoopEnd implements NodeParameters {
         interface TargetsRef extends ParameterReference<TargetCondition[]> { }
         static final class HasSeveralTargets implements EffectPredicateProvider {
             @Override public EffectPredicate init(final PredicateInitializer initializer) {
@@ -602,14 +539,7 @@ public final class ModernNodeParameters {
         @Persistor(TargetRulePersistor.class) public String targetRule="ALL";
     }
 
-    public static final class SurrogateCoordinator implements NodeParameters {
-        @Widget(title="Acquisition or score column", description="Numeric column created upstream and used to rank surrogate candidates.")
-        @ChoicesProvider(NumericColumnChoices.class) @Persist(configKey="acquisition_column") public String acquisition="acquisition";
-        @Widget(title="Preferred score direction", description="Whether lower or higher acquisition values are preferred.") @ChoicesProvider(DirectionChoices.class) @Persist(configKey="score_direction") public String direction="MAXIMIZE";
-        @Widget(title="Exact evaluations per population", description="Highest-ranked candidates sent to the exact evaluator.") @Persist(configKey="exact_count") public int exactCount=10;
-    }
-
-    public static final class OptimizationMonitor implements NodeParameters {
+    public static final class TrackProgress implements NodeParameters {
         @Widget(title="Recorded stage name",
             description="Human-readable label stored in detailed event rows, for example evaluated population or survivors.")
         @Persist(configKey="stage") public String stage="population";
@@ -666,7 +596,7 @@ public final class ModernNodeParameters {
             description="Algorithm or method label used to draw separate curves.")
         @Persist(configKey="series_column") public String seriesColumn="Series";
         @Widget(title="Fitness column", description="Final performance value shown on the horizontal axis.")
-        @Persist(configKey="nfe_column") public String fitnessColumn="Fitness";
+        @Persist(configKey="fitness_column") public String fitnessColumn="Fitness";
         @Widget(title="ECDF column",
             description="Fraction of runs whose final fitness is at or below the horizontal-axis value.")
         @Persist(configKey="ecdf_column") public String ecdfColumn="ECDF";
@@ -683,7 +613,7 @@ public final class ModernNodeParameters {
         }
     }
 
-    public static final class ReferenceIndicators implements NodeParameters {
+    public static final class CompareParetoFronts implements NodeParameters {
         // Objectives, directions, and constraint accounting come from Problem Setup.
     }
 
@@ -691,6 +621,9 @@ public final class ModernNodeParameters {
         @Widget(title="Migrants per population",
             description="Number of the strongest candidates each population sends when this node executes.")
         @Persist(configKey="migrant_count") public int count=1;
+        @Widget(title="Migration interval",
+            description="Exchange migrants every N completed generations; other passes leave populations unchanged.")
+        @Persist(configKey="migration_interval") public int interval=10;
         @Widget(title="Migration topology", description="How migrants move between the populations in the input table.")
         @ChoicesProvider(MigrationTopologyChoices.class)
         @Persist(configKey="migration_topology") public String topology="RING";
@@ -700,12 +633,12 @@ public final class ModernNodeParameters {
         @Persist(configKey="migration_replacement") public String replacement="REPLACE_WORST";
     }
 
-    public static final class EvolutionTrace implements NodeParameters {
+    public static final class RecordPopulation implements NodeParameters {
         @Widget(title="Stage", description="Semantic evolutionary stage recorded in every trace row.") @Persist(configKey="stage") public String stage="operator-stage";
         @Widget(title="Operator", description="Operator or strategy label recorded in every trace row.") @Persist(configKey="operator") public String operator="custom";
     }
 
-    public static final class IohProfilerExport implements NodeParameters {
+    public static final class ExportToIohProfiler implements NodeParameters {
         @Widget(title="Output directory", description="Parent directory for the new IOH experiment folder.") @Persist(configKey="output_directory") public String output="ioh-output";
         @Widget(title="New folder name", description="New non-existing or empty output folder.") @Persist(configKey="folder_name") public String folder="ioh_data";
         @Widget(title="Suite", description="IOH suite identifier.") @Persist(configKey="suite") public String suite="unknown_suite";

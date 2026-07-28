@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="../../default.png" type="Manipulator">
+  <name>Elitism</name>
+  <shortDescription>Selects which parents and children remain in the population.</shortDescription>
+  <fullDescription><intro>Automatically reads objectives, directions, constraints, the initial population size, NFE, and the evaluation budget from Problem Setup. Provides standard elitism, parent-child DE competition, NSGA-II, NSGA-III, and GDE3 survivor selection. Pairwise DE competition records successful F/CR parameters and their fitness improvement for the next SHADE update, and clears unsuccessful events. Population size can remain fixed or decrease linearly with NFE for L-SHADE.</intro></fullDescription>
+  <ports><inPort index="0" name="Current population">Evaluated parents.</inPort><inPort index="1" name="Evaluated children">Evaluated proposals.</inPort><outPort index="0" name="Survivors">Next population.</outPort><outPort index="1" name="Rejected or replaced">Candidates not selected.</outPort></ports>
+</knimeNode>

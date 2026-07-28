@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<knimeNode icon="../../../default.png" type="Manipulator">
-  <name>Crossover</name><shortDescription>Applies ordinary or Differential Evolution crossover.</shortDescription>
-  <fullDescription><intro>Automatically reads decision variables, bounds, objectives, and constraints from Problem Setup. Provides SBX, uniform, one-point, arithmetic, DE binomial, and DE exponential crossover. DE modes combine each mutant with its original target and remove all temporary donor data.</intro></fullDescription>
-  <ports><inPort index="0" name="Candidates">Selected parents or DE mutants.</inPort><outPort index="0" name="Offspring">Unevaluated offspring with the normal population schema.</outPort></ports>
-</knimeNode>

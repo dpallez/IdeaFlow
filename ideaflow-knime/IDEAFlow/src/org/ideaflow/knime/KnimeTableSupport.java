@@ -69,6 +69,43 @@ public final class KnimeTableSupport {
         return indices;
     }
 
+    /** Requires two tables to have the same ordered columns, types, domains, and properties. */
+    public static void requireSameSchema(final DataTableSpec expected, final DataTableSpec actual,
+            final String label) throws InvalidSettingsException {
+        if (expected == null || actual == null) return;
+        if (expected.getNumColumns() != actual.getNumColumns()) {
+            throw new InvalidSettingsException(label + " must have exactly the population schema: expected "
+                + expected.getNumColumns() + " columns but found " + actual.getNumColumns() + ".");
+        }
+        for (int index = 0; index < expected.getNumColumns(); index++) {
+            if (!expected.getColumnSpec(index).equals(actual.getColumnSpec(index))) {
+                throw new InvalidSettingsException(label + " must have exactly the population schema. "
+                    + "The first mismatch is column " + index + " ('"
+                    + expected.getColumnSpec(index).getName() + "').");
+            }
+        }
+    }
+
+    /** Requires the same ordered column names and types, while allowing different domain metadata. */
+    public static void requireCompatibleSchema(final DataTableSpec expected, final DataTableSpec actual,
+            final String label) throws InvalidSettingsException {
+        if (expected == null || actual == null) return;
+        if (expected.getNumColumns() != actual.getNumColumns()) {
+            throw new InvalidSettingsException(label + " must have the population columns: expected "
+                + expected.getNumColumns() + " columns but found " + actual.getNumColumns() + ".");
+        }
+        for (int index = 0; index < expected.getNumColumns(); index++) {
+            final DataColumnSpec expectedColumn = expected.getColumnSpec(index);
+            final DataColumnSpec actualColumn = actual.getColumnSpec(index);
+            if (!expectedColumn.getName().equals(actualColumn.getName())
+                    || !expectedColumn.getType().equals(actualColumn.getType())) {
+                throw new InvalidSettingsException(label + " must have the same ordered column names and types "
+                    + "as the population. The first mismatch is column " + index + " ('"
+                    + expectedColumn.getName() + "').");
+            }
+        }
+    }
+
     public static double number(final DataCell cell, final DataRow row, final String column)
             throws InvalidSettingsException {
         if (cell.isMissing()) throw new InvalidSettingsException("Missing value in '" + column + "' at " + row.getKey());

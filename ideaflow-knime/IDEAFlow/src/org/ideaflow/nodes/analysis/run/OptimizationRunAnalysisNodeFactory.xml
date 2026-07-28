@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Optimization Run Analysis node description. -->
+<knimeNode icon="../../../default.png" type="Manipulator">
+  <name>Optimization Run Analysis</name>
+  <shortDescription>Creates convergence and final-fitness ECDF tables from repeated optimization runs.</shortDescription>
+  <fullDescription>
+    <intro>Consumes accumulated Track Progress histories from any number of algorithms. It aligns checkpoints, summarizes convergence across runs, calculates the empirical distribution of final fitness, and creates one final record per run. The success target is used only for the per-run Success and First hit NFE fields.</intro>
+  </fullDescription>
+  <ports>
+    <inPort index="0" name="Optimization histories">Concatenated per-checkpoint histories from Optimization Loop End.</inPort>
+    <outPort index="0" name="Convergence">Median, quartiles, mean, deviation, and run count by series and NFE.</outPort>
+    <outPort index="1" name="Final-fitness ECDF">Fraction of runs at or below each final-fitness value, by series.</outPort>
+    <outPort index="2" name="Runs">Final value, success, and first-hit NFE for every run.</outPort>
+  </ports>
+</knimeNode>

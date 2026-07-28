@@ -11,6 +11,7 @@ import org.ideaflow.api.ConstraintDefinition;
 import org.ideaflow.api.ConstraintRelation;
 import org.ideaflow.api.IdeaFlowState;
 import org.ideaflow.api.OptimizationDirection;
+import org.ideaflow.core.EvolutionSchedule;
 import org.ideaflow.knime.KnimeTableSupport.ProblemMetadata;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -154,6 +155,16 @@ public final class EvaluationFinalizer {
             previousNfe.merge(run, PopulationState.nfe(row, inputSpec), Math::max);
             if (!state.booleanValue(IdeaFlowState.EVALUATED, false)) {
                 unevaluatedCount.merge(run, 1L, Long::sum);
+            }
+        }
+        final long maximumNfe = ProblemMetadata.require(inputSpec).maxEvaluations();
+        for (Map.Entry<String, Long> entry : unevaluatedCount.entrySet()) {
+            final long currentNfe = previousNfe.getOrDefault(entry.getKey(), 0L);
+            if (!EvolutionSchedule.canEvaluateBatch(currentNfe, entry.getValue(), maximumNfe)) {
+                throw new InvalidSettingsException("Evaluating " + entry.getValue()
+                    + " candidates for run '" + entry.getKey() + "' at NFE " + currentNfe
+                    + " would exceed the maximum NFE " + maximumNfe
+                    + ". Reduce the initial population or stop before this complete generation.");
             }
         }
         final Map<String, Long> nextEvaluation = new HashMap<>(previousNfe);

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<knimeNode icon="../../default.png" type="Manipulator">
+  <name>Compare Pareto Fronts</name>
+  <shortDescription>Compares an approximation with a known reference Pareto front.</shortDescription>
+  <fullDescription>
+    <intro>Automatically reads objectives, directions, and constraints from Problem Setup, then computes GD, IGD, IGD+, epsilon, and spacing by comparing each feasible nondominated approximation with a known reference-front table.</intro>
+  </fullDescription>
+  <ports>
+    <inPort index="0" name="Front found by the algorithm">Evaluated IdeaFlow populations or archives.</inPort>
+    <inPort index="1" name="Known reference front">Rows containing columns named like the objectives from Problem Setup.</inPort>
+    <outPort index="0" name="Comparison results">One indicator row per run and population; smaller distances are generally better.</outPort>
+  </ports>
+</knimeNode>

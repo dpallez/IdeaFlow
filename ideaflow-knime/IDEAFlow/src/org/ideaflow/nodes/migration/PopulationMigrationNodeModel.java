@@ -19,6 +19,7 @@ import org.ideaflow.api.ObjectiveDefinition;
 import org.ideaflow.api.ReservedColumns;
 import org.ideaflow.core.CrowdingDistance;
 import org.ideaflow.core.DeterministicRandom;
+import org.ideaflow.core.EvolutionSchedule;
 import org.ideaflow.core.FastNonDominatedSort;
 import org.ideaflow.knime.KnimeTableSupport;
 import org.ideaflow.knime.KnimeTableSupport.ProblemMetadata;
@@ -42,10 +43,13 @@ import org.knime.core.node.defaultnodesettings.SettingsModelString;
 /** Migration between population groups using the objectives declared by Problem Setup. */
 public final class PopulationMigrationNodeModel extends NodeModel {
     static final String CFG_COUNT = "migrant_count";
+    static final String CFG_INTERVAL = "migration_interval";
     static final String CFG_TOPOLOGY = "migration_topology";
     static final String CFG_REPLACEMENT = "migration_replacement";
     private final SettingsModelIntegerBounded m_count =
         new SettingsModelIntegerBounded(CFG_COUNT, 1, 1, Integer.MAX_VALUE);
+    private final SettingsModelIntegerBounded m_interval =
+        new SettingsModelIntegerBounded(CFG_INTERVAL, 10, 1, Integer.MAX_VALUE);
     private final SettingsModelString m_topology = new SettingsModelString(CFG_TOPOLOGY, "RING");
     private final SettingsModelString m_replacement =
         new SettingsModelString(CFG_REPLACEMENT, "REPLACE_WORST");
@@ -78,27 +82,45 @@ public final class PopulationMigrationNodeModel extends NodeModel {
             if (islands.size() < 2) {
                 throw new InvalidSettingsException("Migration requires at least two populations per run.");
             }
+            final long generation = runEntry.getValue().values().stream().flatMap(List::stream)
+                .mapToLong(row -> generation(row, spec)).max().orElse(0L);
+            if (!EvolutionSchedule.shouldMigrate(generation, m_interval.getIntValue())) {
+                for (String island : islands) {
+                    for (DataRow row : runEntry.getValue().get(island)) {
+                        output.addRowToTable(new DefaultRow("Unmigrated" + key++, row));
+                        execution.checkCanceled();
+                    }
+                }
+                continue;
+            }
+
             final long migrationNfe = runEntry.getValue().values().stream().flatMap(List::stream)
                 .mapToLong(row -> PopulationState.nfe(row, spec)).max().orElse(0L);
+            final Map<String, OptimizerSnapshot> destinationState = new LinkedHashMap<>();
             final Map<String, List<DataRow>> incoming = new LinkedHashMap<>();
-            for (String island : islands) incoming.put(island, new ArrayList<>());
+            for (String island : islands) {
+                destinationState.put(island,
+                    OptimizerSnapshot.from(runEntry.getValue().get(island), spec, generation));
+                incoming.put(island, new ArrayList<>());
+            }
             for (int sourceIndex = 0; sourceIndex < islands.size(); sourceIndex++) {
                 final String source = islands.get(sourceIndex);
                 final List<DataRow> sourceRows =
                     preferenceOrder(new ArrayList<>(runEntry.getValue().get(source)), spec, problem);
                 final int migrantCount = Math.min(m_count.getIntValue(), sourceRows.size());
-                for (String destination : destinations(islands, sourceIndex, sourceRows.get(0), spec, migrationNfe)) {
+                for (String destination :
+                        destinations(islands, sourceIndex, sourceRows.get(0), spec, migrationNfe)) {
                     for (int migrantIndex = 0; migrantIndex < migrantCount; migrantIndex++) {
-                        incoming.get(destination).add(migrant(sourceRows.get(migrantIndex), source, destination,
-                            migrantIndex, migrationNfe, stateIndex, spec));
+                        incoming.get(destination).add(migrant(sourceRows.get(migrantIndex),
+                            source, destination, migrantIndex, migrationNfe, stateIndex, spec,
+                            destinationState.get(destination)));
                     }
                 }
             }
-            final Map<String, List<DataRow>> next = new LinkedHashMap<>();
             for (String island : islands) {
-                next.put(island, migratedPopulation(runEntry.getValue().get(island), incoming.get(island),
-                    spec, problem));
-                for (DataRow row : next.get(island)) {
+                final List<DataRow> migrated = migratedPopulation(
+                    runEntry.getValue().get(island), incoming.get(island), spec, problem);
+                for (DataRow row : migrated) {
                     output.addRowToTable(new DefaultRow("Migrated" + key++, row));
                     execution.checkCanceled();
                 }
@@ -107,7 +129,6 @@ public final class PopulationMigrationNodeModel extends NodeModel {
         output.close();
         return new BufferedDataTable[]{output.getTable()};
     }
-
     private List<String> destinations(final List<String> populations, final int sourceIndex,
             final DataRow sourceRow, final DataTableSpec spec, final long nfe) throws InvalidSettingsException {
         if ("RING".equals(m_topology.getStringValue())) {
@@ -125,20 +146,58 @@ public final class PopulationMigrationNodeModel extends NodeModel {
         return List.of(populations.get(destinationIndex));
     }
 
-    private static DataRow migrant(final DataRow row, final String source, final String destination,
-            final int migrantIndex, final long nfe, final int stateIndex, final DataTableSpec spec)
-            throws InvalidSettingsException {
+    private static DataRow migrant(final DataRow row, final String source,
+            final String destination, final int migrantIndex, final long nfe,
+            final int stateIndex, final DataTableSpec spec,
+            final OptimizerSnapshot destinationState) throws InvalidSettingsException {
         final DataCell[] cells = new DataCell[spec.getNumColumns()];
         for (int column = 0; column < cells.length; column++) cells[column] = row.getCell(column);
         final String individual = PopulationState.individual(row, spec) + ":from:" + source + ":to:"
             + destination + ":nfe:" + nfe + ":" + migrantIndex;
-        final IdeaFlowState state = PopulationState.get(row, spec)
+        IdeaFlowState state = PopulationState.get(row, spec)
             .with(IdeaFlowState.POPULATION, destination)
-            .with(IdeaFlowState.INDIVIDUAL, individual);
+            .with(IdeaFlowState.INDIVIDUAL, individual)
+            .with(IdeaFlowState.DE_SUCCESS, false)
+            .without(IdeaFlowState.DE_IMPROVEMENT, IdeaFlowState.DE_F, IdeaFlowState.DE_CR,
+                IdeaFlowState.PARENTS, IdeaFlowState.DE_TARGET_VECTOR,
+                IdeaFlowState.DE_RANDOM_BASE_VECTOR, IdeaFlowState.DE_DIFFERENCE_1_VECTOR,
+                IdeaFlowState.DE_DIFFERENCE_2_VECTOR, IdeaFlowState.DE_BEST_VECTOR,
+                IdeaFlowState.DE_PBEST_VECTOR, IdeaFlowState.DE_PBEST_DIFFERENCE_2_VECTOR);
+        state = destinationState.apply(state);
         cells[stateIndex] = new IdeaFlowStateCell(state);
         return new DefaultRow("Migrant-" + individual, cells);
     }
 
+    private static long generation(final DataRow row, final DataTableSpec spec) {
+        try {
+            return PopulationState.get(row, spec).longValue(IdeaFlowState.GENERATION, 0L);
+        } catch (InvalidSettingsException exception) {
+            throw new IllegalStateException(exception);
+        }
+    }
+
+    private record OptimizerSnapshot(String memoryF, String memoryCr,
+            int memoryIndex, long generation) {
+        static OptimizerSnapshot from(final List<DataRow> rows, final DataTableSpec spec,
+                final long generation) throws InvalidSettingsException {
+            final IdeaFlowState state = PopulationState.get(rows.get(0), spec);
+            return new OptimizerSnapshot(
+                state.text(IdeaFlowState.SHADE_MEMORY_F, ""),
+                state.text(IdeaFlowState.SHADE_MEMORY_CR, ""),
+                state.intValue(IdeaFlowState.SHADE_MEMORY_INDEX, 0), generation);
+        }
+
+        IdeaFlowState apply(IdeaFlowState state) {
+            state = state.with(IdeaFlowState.GENERATION, generation);
+            if (memoryF.isBlank() || memoryCr.isBlank()) {
+                return state.without(IdeaFlowState.SHADE_MEMORY_F,
+                    IdeaFlowState.SHADE_MEMORY_CR, IdeaFlowState.SHADE_MEMORY_INDEX);
+            }
+            return state.with(IdeaFlowState.SHADE_MEMORY_F, memoryF)
+                .with(IdeaFlowState.SHADE_MEMORY_CR, memoryCr)
+                .with(IdeaFlowState.SHADE_MEMORY_INDEX, memoryIndex);
+        }
+    }
     private List<DataRow> migratedPopulation(final List<DataRow> current, final List<DataRow> incoming,
             final DataTableSpec spec, final ProblemMetadata.Schema problem) throws InvalidSettingsException {
         final List<DataRow> result = new ArrayList<>(current);
@@ -200,17 +259,20 @@ public final class PopulationMigrationNodeModel extends NodeModel {
 
     @Override protected void saveSettingsTo(final NodeSettingsWO settings) {
         m_count.saveSettingsTo(settings);
+        m_interval.saveSettingsTo(settings);
         m_topology.saveSettingsTo(settings);
         m_replacement.saveSettingsTo(settings);
     }
     @Override protected void validateSettings(final NodeSettingsRO settings) throws InvalidSettingsException {
         m_count.validateSettings(settings);
+        m_interval.validateSettings(settings);
         m_topology.validateSettings(settings);
         m_replacement.validateSettings(settings);
     }
     @Override protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
             throws InvalidSettingsException {
         m_count.loadSettingsFrom(settings);
+        m_interval.loadSettingsFrom(settings);
         m_topology.loadSettingsFrom(settings);
         m_replacement.loadSettingsFrom(settings);
     }

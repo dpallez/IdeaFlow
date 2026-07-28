@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<knimeNode icon="../../../default.png" type="Manipulator">
+<knimeNode icon="../../default.png" type="Manipulator">
   <name>Reference Directions</name>
   <shortDescription>Creates Das-Dennis reference directions.</shortDescription>
   <fullDescription>

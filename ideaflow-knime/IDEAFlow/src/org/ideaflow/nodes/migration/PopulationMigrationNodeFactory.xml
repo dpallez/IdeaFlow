@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<knimeNode icon="../../../default.png" type="Manipulator">
+<knimeNode icon="../../default.png" type="Manipulator">
   <name>Population Migration</name>
   <shortDescription>Exchanges strong candidates between populations in one combined table.</shortDescription>
-  <fullDescription><intro>Groups rows automatically by their IdeaFlow population identity and migrates the strongest feasible candidates using ring, reproducible-random, or all-to-all routing. Incoming candidates can replace the weakest destination candidates or be added. No generation counter is used: migration happens whenever this node executes.</intro></fullDescription>
+  <fullDescription><intro>Groups rows automatically by their IdeaFlow population identity and exchanges the strongest feasible candidates at the configured generation interval using ring, reproducible-random, or all-to-all routing. Incoming candidates can replace the weakest destination candidates or be added. Migrants retain their evaluated decision and objective values while destination-local optimizer memory remains isolated.</intro></fullDescription>
   <ports>
     <inPort index="0" name="Combined populations">At least two population IDs per run, normally produced by Concatenate.</inPort>
     <outPort index="0" name="Populations after migration">One combined table ready for the shared loop end or population filters.</outPort>

@@ -17,10 +17,10 @@ import org.knime.core.webui.node.view.NodeView;
 import org.knime.core.webui.page.Page;
 
 /** Self-contained modern browser view; the PNG is embedded to avoid transient resource URLs. */
-final class OptimizationModernPlotView implements NodeView {
+public final class OptimizationModernPlotView implements NodeView {
     private final Supplier<OptimizationPlotData> m_plotSupplier;
 
-    OptimizationModernPlotView(final Supplier<OptimizationPlotData> plotSupplier) {
+    public OptimizationModernPlotView(final Supplier<OptimizationPlotData> plotSupplier) {
         m_plotSupplier = plotSupplier;
     }
 

@@ -12,6 +12,7 @@ public final class IdeaFlowState {
     public static final String RUN = "run";
     public static final String POPULATION = "population";
     public static final String INDIVIDUAL = "individual";
+    public static final String GENERATION = "generation";
     public static final String SEED = "seed";
     public static final String INITIAL_POPULATION_SIZE = "initialPopulationSize";
     public static final String EVALUATED = "evaluated";
@@ -20,6 +21,7 @@ public final class IdeaFlowState {
     public static final String DE_F = "deF";
     public static final String DE_CR = "deCR";
     public static final String DE_SUCCESS = "deSuccess";
+    public static final String DE_IMPROVEMENT = "deImprovement";
     public static final String SHADE_MEMORY_F = "shadeMemoryF";
     public static final String SHADE_MEMORY_CR = "shadeMemoryCR";
     public static final String SHADE_MEMORY_INDEX = "shadeMemoryIndex";

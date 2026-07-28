@@ -58,20 +58,24 @@ public final class OptimizationSummary {
             number(row, spec, STANDARD_DEVIATION),
             ((IntValue)row.getCell(spec.findColumnIndex(NONDOMINATED_SIZE))).getIntValue(),
             number(row, spec, HYPERVOLUME),
-            optionalText(row, spec, SERIES, text(row, spec, POPULATION)),
-            optionalLong(row, spec, SEED, 0L),
-            optionalText(row, spec, PROBLEM, ProblemMetadata.require(spec).problemId()));
+            text(row, spec, SERIES),
+            ((LongValue)row.getCell(spec.findColumnIndex(SEED))).getLongValue(),
+            text(row, spec, PROBLEM));
     }
 
     public static void validate(final DataTableSpec spec) throws InvalidSettingsException {
         ProblemMetadata.require(spec);
-        for (String name : List.of(RUN, POPULATION)) {
-            if (spec.findColumnIndex(name) < 0) {
-                throw new InvalidSettingsException("Progress summary is missing column: " + name);
+        for (String name : List.of(RUN, POPULATION, SERIES, PROBLEM)) {
+            final int index = spec.findColumnIndex(name);
+            if (index < 0 || !org.knime.core.data.StringValue.class.isAssignableFrom(
+                    spec.getColumnSpec(index).getType().getPreferredValueClass())) {
+                throw new InvalidSettingsException(
+                    "Progress summary is missing text column: " + name);
             }
         }
         KnimeTableSupport.requireNumericColumns(spec, List.of(PopulationState.NFE, POPULATION_SIZE,
-            FEASIBLE_SIZE, BEST, MEAN, WORST, STANDARD_DEVIATION, NONDOMINATED_SIZE, HYPERVOLUME));
+            FEASIBLE_SIZE, BEST, MEAN, WORST, STANDARD_DEVIATION, NONDOMINATED_SIZE, HYPERVOLUME,
+            SEED));
     }
 
     private static DataTableSpec rawSpec() {
@@ -98,18 +102,6 @@ public final class OptimizationSummary {
         return cell.isMissing() ? Double.NaN : ((DoubleValue)cell).getDoubleValue();
     }
 
-    private static String optionalText(final DataRow row, final DataTableSpec spec, final String name,
-            final String fallback) {
-        final int index = spec.findColumnIndex(name);
-        return index < 0 || row.getCell(index).isMissing() ? fallback : row.getCell(index).toString();
-    }
-
-    private static long optionalLong(final DataRow row, final DataTableSpec spec, final String name,
-            final long fallback) {
-        final int index = spec.findColumnIndex(name);
-        return index < 0 || row.getCell(index).isMissing()
-            ? fallback : ((LongValue)row.getCell(index)).getLongValue();
-    }
 
     private static DataCell finite(final double value) {
         return Double.isFinite(value) ? new DoubleCell(value)
