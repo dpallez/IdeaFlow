@@ -7,25 +7,43 @@ import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.webui.node.view.NodeViewFactory;
 
+/** Creates Convergence Plot nodes and their desktop and browser views. */
 public final class ConvergencePlotNodeFactory extends NodeFactory<ConvergencePlotNodeModel>
-        implements ModernNodeDialogFactory, NodeViewFactory<ConvergencePlotNodeModel> {
-    @Override public ConvergencePlotNodeModel createNodeModel() {
-        return new ConvergencePlotNodeModel();
-    }
-    @Override protected int getNrNodeViews() { return 0; }
-    @Override public org.knime.core.node.NodeView<ConvergencePlotNodeModel> createNodeView(
-            final int index, final ConvergencePlotNodeModel model) {
-        throw new IndexOutOfBoundsException("Convergence Plot has no legacy views.");
-    }
-    @Override protected boolean hasDialog() { return true; }
-    @Override protected NodeDialogPane createNodeDialogPane() {
-        return new ConvergencePlotNodeDialog();
-    }
-    @Override public Class<? extends org.knime.node.parameters.NodeParameters> modernParametersClass() {
-        return ModernNodeParameters.ConvergencePlot.class;
-    }
-    @Override public org.knime.core.webui.node.view.NodeView createNodeView(
-            final ConvergencePlotNodeModel model) {
-        return new OptimizationModernPlotView(model::plotData);
-    }
+    implements ModernNodeDialogFactory, NodeViewFactory<ConvergencePlotNodeModel> {
+  @Override
+  public ConvergencePlotNodeModel createNodeModel() {
+    return new ConvergencePlotNodeModel();
+  }
+
+  @Override
+  protected int getNrNodeViews() {
+    return 0;
+  }
+
+  @Override
+  public org.knime.core.node.NodeView<ConvergencePlotNodeModel> createNodeView(
+      final int index, final ConvergencePlotNodeModel model) {
+    throw new IndexOutOfBoundsException("Convergence Plot has no legacy views.");
+  }
+
+  @Override
+  protected boolean hasDialog() {
+    return true;
+  }
+
+  @Override
+  protected NodeDialogPane createNodeDialogPane() {
+    return new ConvergencePlotNodeDialog();
+  }
+
+  @Override
+  public Class<? extends org.knime.node.parameters.NodeParameters> modernParametersClass() {
+    return ModernNodeParameters.ConvergencePlot.class;
+  }
+
+  @Override
+  public org.knime.core.webui.node.view.NodeView createNodeView(
+      final ConvergencePlotNodeModel model) {
+    return new OptimizationModernPlotView(model::plotData);
+  }
 }

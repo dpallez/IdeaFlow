@@ -30,7 +30,9 @@ Initial experimental snapshot of the IdeaFlow KNIME extension.
   configurable generation interval, without importing a source island's adaptive optimizer memory.
 - Track scalar and Pareto progress, record population traces, summarize repeated runs, and display convergence and
   final-fitness ECDF plots.
-- Export optimization histories as IOHprofiler files with an IdeaFlow companion event file.
+- Export event histories to standard IOHprofiler metadata, improvement, and optional complete-data files. Scalar
+  selection and direction are validated, and an escaped IdeaFlow companion file can retain additional source
+  columns.
 
 ### Extension contracts and algorithm support
 
@@ -41,8 +43,9 @@ Initial experimental snapshot of the IdeaFlow KNIME extension.
 - Modern KNIME node dialogs for every registered node that requires configuration.
 - Strict current-snapshot settings and progress-table contracts; obsolete pre-release setting aliases and inferred
   progress identity fields are not retained.
-- Automated OSGi regression tests cover DE competition, canonical SHADE memory updates, migration cadence, and strict
-  generation-level evaluation-budget reservation.
+- Automated OSGi regression tests cover DE competition, canonical SHADE memory updates, migration cadence, strict
+  generation-level evaluation-budget reservation, and IOHprofiler improvement-log correctness, metadata, validation,
+  and sidecar escaping.
 
 ### Snapshot limitations
 

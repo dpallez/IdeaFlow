@@ -2,6 +2,11 @@
 <knimeNode icon="../../default.png" type="Sink">
   <name>Export to IOHprofiler</name>
   <shortDescription>Exports optimization history in IOHprofiler format.</shortDescription>
-  <fullDescription><intro>Reads problem name, dimension and objective direction from Problem Setup, then writes IOH .info, improvement .dat, optional complete .cdat, and a lossless IdeaFlow companion event file.</intro></fullDescription>
-  <ports><inPort index="0" name="Optimization history">Evaluation or monitor events.</inPort><outPort index="0" name="Export summary">Written path and event count.</outPort></ports>
+  <fullDescription>
+    <intro>Reads problem metadata and an event history, then writes standard IOH .info and improvement .dat files. It can also write a complete .cdat log. An escaped IdeaFlow TSV sidecar preserves selected columns that IOH cannot represent.</intro>
+  </fullDescription>
+  <ports>
+    <inPort index="0" name="Optimization history">An event-history table with visible Run and NFE columns, such as Evaluation output, Track Progress, or Record Population trace.</inPort>
+    <outPort index="0" name="Export summary">Written path, selected measure and direction, run and event counts, and NFE range.</outPort>
+  </ports>
 </knimeNode>

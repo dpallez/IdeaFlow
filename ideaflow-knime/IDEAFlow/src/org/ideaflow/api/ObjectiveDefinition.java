@@ -2,16 +2,14 @@ package org.ideaflow.api;
 
 import java.util.Objects;
 
+/** Objective metadata used by dominance, ranking, and quality-indicator calculations. */
 public record ObjectiveDefinition(
-        String column,
-        OptimizationDirection direction,
-        Double target,
-        Double referencePoint) {
+    String column, OptimizationDirection direction, Double target, Double referencePoint) {
 
-    public ObjectiveDefinition {
-        if (column == null || column.isBlank()) {
-            throw new IllegalArgumentException("Objective column is required.");
-        }
-        Objects.requireNonNull(direction, "Objective direction is required.");
+  public ObjectiveDefinition {
+    if (column == null || column.isBlank()) {
+      throw new IllegalArgumentException("Objective column is required.");
     }
+    Objects.requireNonNull(direction, "Objective direction is required.");
+  }
 }
