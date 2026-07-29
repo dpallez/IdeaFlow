@@ -40,7 +40,8 @@ public final class EvaluationNodeModel extends NodeModel {
 
   static final String CFG_FUNCTION = "benchmark";
   static final String CFG_METHOD = "evaluation_method";
-  static final String CFG_FORMULAS = "formula_definitions";
+  static final String CFG_OBJECTIVE_FORMULAS = "objective_formula_definitions";
+  static final String CFG_CONSTRAINT_FORMULAS = "constraint_formula_definitions";
 
   record FormulaDefinition(String result, String expression) {}
 
@@ -48,7 +49,10 @@ public final class EvaluationNodeModel extends NodeModel {
 
   private final SettingsModelString m_function = new SettingsModelString(CFG_FUNCTION, "ACKLEY");
   private final SettingsModelString m_method = new SettingsModelString(CFG_METHOD, "BUILT_IN");
-  private final SettingsModelString m_formulas = new SettingsModelString(CFG_FORMULAS, "");
+  private final SettingsModelString m_objectiveFormulas =
+      new SettingsModelString(CFG_OBJECTIVE_FORMULAS, "");
+  private final SettingsModelString m_constraintFormulas =
+      new SettingsModelString(CFG_CONSTRAINT_FORMULAS, "");
 
   EvaluationNodeModel() {
     super(2, 2);
@@ -66,10 +70,12 @@ public final class EvaluationNodeModel extends NodeModel {
     switch (method()) {
       case "BUILT_IN" -> {
         validateBenchmark(metadata);
-        calculated = calculatedSpec(decoded, problem);
+        calculated =
+            formulaSpec(
+                calculatedSpec(decoded, problem), compiledConstraintFormulas(decoded, metadata));
       }
       case "FORMULAS" -> {
-        final List<CompiledFormula> formulas = compiledFormulas(decoded, metadata);
+        final List<CompiledFormula> formulas = compiledProblemFormulas(decoded, metadata);
         calculated = formulaSpec(decoded, formulas);
       }
       case "EXISTING_RESULTS" -> calculated = decoded;
@@ -99,11 +105,11 @@ public final class EvaluationNodeModel extends NodeModel {
     switch (method()) {
       case "BUILT_IN" -> {
         validateBenchmark(metadata);
-        formulas = List.of();
-        calculatedSpec = calculatedSpec(decodedSpec, problem);
+        formulas = compiledConstraintFormulas(decodedSpec, metadata);
+        calculatedSpec = formulaSpec(calculatedSpec(decodedSpec, problem), formulas);
       }
       case "FORMULAS" -> {
-        formulas = compiledFormulas(decodedSpec, metadata);
+        formulas = compiledProblemFormulas(decodedSpec, metadata);
         calculatedSpec = formulaSpec(decodedSpec, formulas);
       }
       case "EXISTING_RESULTS" -> {
@@ -126,7 +132,8 @@ public final class EvaluationNodeModel extends NodeModel {
           cells[calculatedSpec.findColumnIndex(objectiveNames.get(index))] =
               new DoubleCell(values[index]);
         }
-      } else if ("FORMULAS".equals(method())) {
+      }
+      if (!formulas.isEmpty()) {
         final double[] point = point(cells, indices, row, variableNames);
         final Map<String, Double> variables = new LinkedHashMap<>();
         for (int index = 0; index < variableNames.size(); index++) {
@@ -390,13 +397,38 @@ public final class EvaluationNodeModel extends NodeModel {
   }
 
   // Compile once per execution and verify that every declared result is produced exactly once.
-  private List<CompiledFormula> compiledFormulas(
+  private List<CompiledFormula> compiledProblemFormulas(
       final DataTableSpec decoded, final ProblemMetadata.Schema problem)
       throws InvalidSettingsException {
-    final List<FormulaDefinition> definitions = decodeFormulaSettings(m_formulas.getStringValue());
-    final List<String> required = new ArrayList<>(problem.objectiveNames());
-    required.addAll(
-        problem.constraints().stream().map(ProblemMetadata.Constraint::column).toList());
+    final List<CompiledFormula> formulas =
+        new ArrayList<>(
+            compiledFormulas(
+                decoded,
+                problem,
+                problem.objectiveNames(),
+                m_objectiveFormulas.getStringValue()));
+    formulas.addAll(compiledConstraintFormulas(decoded, problem));
+    return List.copyOf(formulas);
+  }
+
+  // Built-in benchmarks own their objective calculations. Formula cards only supply the
+  // additional values needed by constraints declared in Problem Setup.
+  private List<CompiledFormula> compiledConstraintFormulas(
+      final DataTableSpec decoded, final ProblemMetadata.Schema problem)
+      throws InvalidSettingsException {
+    final List<String> constraints =
+        problem.constraints().stream().map(ProblemMetadata.Constraint::column).toList();
+    return compiledFormulas(
+        decoded, problem, constraints, m_constraintFormulas.getStringValue());
+  }
+
+  private List<CompiledFormula> compiledFormulas(
+      final DataTableSpec decoded,
+      final ProblemMetadata.Schema problem,
+      final List<String> required,
+      final String encodedDefinitions)
+      throws InvalidSettingsException {
+    final List<FormulaDefinition> definitions = decodeFormulaSettings(encodedDefinitions);
     final Set<String> expected = Set.copyOf(required);
     final Set<String> seen = new HashSet<>();
     final Set<String> allowedVariables = Set.copyOf(problem.evaluatorVariableNames());
@@ -404,7 +436,8 @@ public final class EvaluationNodeModel extends NodeModel {
     for (FormulaDefinition definition : definitions) {
       if (!expected.contains(definition.result())) {
         throw new InvalidSettingsException(
-            "Formula result is not declared in Problem Setup: " + definition.result());
+            "Formula result is not available for the selected evaluation method: "
+                + definition.result());
       }
       if (!seen.add(definition.result())) {
         throw new InvalidSettingsException("Duplicate formula result: " + definition.result());
@@ -474,7 +507,9 @@ public final class EvaluationNodeModel extends NodeModel {
   }
 
   private SettingsModelString[] models() {
-    return new SettingsModelString[] {m_function, m_method, m_formulas};
+    return new SettingsModelString[] {
+      m_function, m_method, m_objectiveFormulas, m_constraintFormulas
+    };
   }
 
   @Override

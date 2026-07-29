@@ -12,8 +12,11 @@ Initial experimental snapshot of the IdeaFlow KNIME extension.
 - Create deterministic initial populations and carry versioned optimizer state and problem metadata through KNIME
   tables.
 - Evaluate candidates with built-in benchmark functions, validated mathematical formulas, or numeric result columns
-  produced by upstream KNIME nodes. Evaluation also decodes encoded variables, calculates constraint violations,
-  advances the number of function evaluations (NFE), and emits evaluation-history events.
+  produced by upstream KNIME nodes. Formula cards are generated from Problem Setup and clearly separated into
+  objectives and constraints. Built-in benchmarks expose only constraint formulas, so their objective equations
+  cannot be replaced accidentally. Evaluation also decodes encoded variables,
+  calculates constraint violations, advances the number of function evaluations (NFE), and emits
+  evaluation-history events.
 - Build strictly NFE-bounded optimization loops with optional objective-target stopping, accumulated progress history,
   and an internally maintained, population-bounded replaced-parent archive for SHADE/L-SHADE donor sampling. A loop
   stops before a complete next generation when that generation would exceed the evaluation budget.
@@ -44,8 +47,8 @@ Initial experimental snapshot of the IdeaFlow KNIME extension.
 - Strict current-snapshot settings and progress-table contracts; obsolete pre-release setting aliases and inferred
   progress identity fields are not retained.
 - Automated OSGi regression tests cover DE competition, canonical SHADE memory updates, migration cadence, strict
-  generation-level evaluation-budget reservation, and IOHprofiler improvement-log correctness, metadata, validation,
-  and sidecar escaping.
+  generation-level evaluation-budget reservation, built-in/formula evaluation result ownership, and IOHprofiler
+  improvement-log correctness, metadata, validation, and sidecar escaping.
 
 ### Snapshot limitations
 
