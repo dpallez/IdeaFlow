@@ -54,3 +54,7 @@ Their definitions, domains, source publications, and links are documented separa
 - the importable example workflow described in the documentation still has to be exported from [KNIME](https://www.knime.com/knime-analytics-platform) and committed under `examples/workflows/`;
 - official distribution through a KNIME update site is separate from manual development installation;
 - no integrated machine-learning model is bundled with IdeaFlow; [`Surrogate Selection`](docs/NODES.md#surrogate-selection) consumes predictions produced by KNIME or an external integration.
+
+## Acknowledgements
+
+The authors gratefully acknowledge the support of DS4H (Digital Systems for Humans), whose funding contributed to the research, development, and documentation of the IdeaFlow project.
