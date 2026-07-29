@@ -2,6 +2,7 @@ package org.ideaflow.nodes.loop.start;
 
 import java.io.File;
 import java.io.IOException;
+import org.ideaflow.knime.KnimeTableSupport;
 import org.ideaflow.nodes.loop.end.OptimizationLoopEndNodeModel;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
@@ -14,6 +15,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.port.PortType;
 import org.knime.core.node.workflow.LoopStartNode;
 
 /** Beginner-facing recursive population loop start. */
@@ -22,7 +24,9 @@ public final class OptimizationLoopStartNodeModel extends NodeModel implements L
   private BufferedDataTable m_currentArchive;
 
   OptimizationLoopStartNodeModel() {
-    super(1, 2);
+    super(
+        new PortType[] {BufferedDataTable.TYPE, BufferedDataTable.TYPE_OPTIONAL},
+        new PortType[] {BufferedDataTable.TYPE, BufferedDataTable.TYPE});
   }
 
   @Override
@@ -32,7 +36,7 @@ public final class OptimizationLoopStartNodeModel extends NodeModel implements L
     final BufferedDataTable archive;
     if (m_iteration == 0) {
       population = input[0];
-      archive = empty(input[0].getDataTableSpec(), execution);
+      archive = input[1] == null ? empty(input[0].getDataTableSpec(), execution) : input[1];
     } else {
       if (!(getLoopEndNode() instanceof OptimizationLoopEndNodeModel end)) {
         throw new IllegalStateException(
@@ -73,6 +77,10 @@ public final class OptimizationLoopStartNodeModel extends NodeModel implements L
 
   @Override
   protected DataTableSpec[] configure(final DataTableSpec[] input) throws InvalidSettingsException {
+    if (input[1] != null) {
+      KnimeTableSupport.requireCompatibleSchema(
+          input[0], input[1], "Initial archive");
+    }
     pushFlowVariableInt("ideaflow_iteration", m_iteration);
     return new DataTableSpec[] {input[0], input[0]};
   }

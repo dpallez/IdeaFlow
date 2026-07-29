@@ -149,6 +149,10 @@ Before proposing a change:
 - verify that the workflow can be saved and reopened;
 - update the documentation and changelog.
 
+The authoritative continuous-integration and release build runs in Jenkins. See the
+[testing guide](TESTING.md) for the local suite and the [Jenkins pipeline guide](JENKINS.md) for agent requirements, build stages, artifacts, and release
+tag rules.
+
 ---
 ## Creating a New Search Recipe
 

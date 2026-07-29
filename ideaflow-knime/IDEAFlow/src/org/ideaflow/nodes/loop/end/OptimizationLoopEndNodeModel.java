@@ -54,7 +54,12 @@ public final class OptimizationLoopEndNodeModel extends NodeModel implements Loo
         new PortType[] {
           BufferedDataTable.TYPE, BufferedDataTable.TYPE_OPTIONAL, BufferedDataTable.TYPE_OPTIONAL
         },
-        new PortType[] {BufferedDataTable.TYPE, BufferedDataTable.TYPE, BufferedDataTable.TYPE});
+        new PortType[] {
+          BufferedDataTable.TYPE,
+          BufferedDataTable.TYPE,
+          BufferedDataTable.TYPE,
+          BufferedDataTable.TYPE
+        });
   }
 
   public BufferedDataTable feedbackPopulation() {
@@ -85,10 +90,12 @@ public final class OptimizationLoopEndNodeModel extends NodeModel implements Loo
   protected DataTableSpec[] configure(final DataTableSpec[] input) throws InvalidSettingsException {
     validate(input[0]);
     final ProblemMetadata.Schema problem = ProblemMetadata.require(input[0]);
-    if (input[1] != null)
-      KnimeTableSupport.requireCompatibleSchema(input[0], input[1], "Replaced DE parents");
-    if (input[2] != null) OptimizationSummary.validate(input[2]);
-    return new DataTableSpec[] {input[0], summarySpec(problem), OptimizationSummary.spec(problem)};
+    if (input[1] != null) OptimizationSummary.validate(input[1]);
+    if (input[2] != null)
+      KnimeTableSupport.requireCompatibleSchema(input[0], input[2], "Next archive");
+    return new DataTableSpec[] {
+      input[0], summarySpec(problem), OptimizationSummary.spec(problem), input[0]
+    };
   }
 
   @Override
@@ -101,10 +108,9 @@ public final class OptimizationLoopEndNodeModel extends NodeModel implements Loo
     final DataTableSpec spec = input[0].getDataTableSpec();
     validate(spec);
     final ProblemMetadata.Schema problem = ProblemMetadata.require(spec);
-    if (input[1] != null)
-      KnimeTableSupport.requireCompatibleSchema(
-          spec, input[1].getDataTableSpec(), "Replaced DE parents");
-    if (input[2] != null) appendHistory(input[2]);
+    if (input[1] != null) appendHistory(input[1]);
+    if (input[2] != null)
+      KnimeTableSupport.requireCompatibleSchema(spec, input[2].getDataTableSpec(), "Next archive");
     final ProblemMetadata.Objective stoppingObjective = problem.objectives().get(0);
     final OptimizationDirection direction = stoppingObjective.direction();
     final List<Target> targets = targets(spec, problem);
@@ -179,7 +185,8 @@ public final class OptimizationLoopEndNodeModel extends NodeModel implements Loo
     feedback.close();
     summary.close();
     m_feedbackPopulation = feedback.getTable();
-    m_feedbackArchive = updateArchive(start.currentArchive(), input[1], input[0], spec, execution);
+    m_feedbackArchive =
+        input[2] == null ? emptyArchive(spec, execution) : copyArchive(input[2], execution);
     if (allStopped) {
       final BufferedDataContainer history =
           execution.createDataContainer(OptimizationSummary.spec(problem));
@@ -189,57 +196,28 @@ public final class OptimizationLoopEndNodeModel extends NodeModel implements Loo
         execution.checkCanceled();
       }
       history.close();
-      return new BufferedDataTable[] {m_feedbackPopulation, summary.getTable(), history.getTable()};
+      return new BufferedDataTable[] {
+        m_feedbackPopulation, summary.getTable(), history.getTable(), m_feedbackArchive
+      };
     }
     super.continueLoop();
-    return new BufferedDataTable[3];
+    return new BufferedDataTable[4];
   }
 
-  // The loop owns a fresh archive table so feedback does not retain an upstream table instance.
-  private static BufferedDataTable updateArchive(
-      final BufferedDataTable existing,
-      final BufferedDataTable replaced,
-      final BufferedDataTable population,
-      final DataTableSpec spec,
-      final ExecutionContext execution)
-      throws InvalidSettingsException {
-    final Map<String, Integer> limits = new LinkedHashMap<>();
-    for (DataRow row : population) {
-      limits.merge(PopulationState.groupKey(row, spec), 1, Integer::sum);
-    }
-
-    final Map<String, LinkedHashMap<String, DataRow>> groups = new LinkedHashMap<>();
-    addArchiveRows(existing, spec, groups);
-    addArchiveRows(replaced, spec, groups);
-
-    final BufferedDataContainer output = execution.createDataContainer(spec, true);
-    int rowNumber = 0;
-    for (Map.Entry<String, Integer> limit : limits.entrySet()) {
-      final List<DataRow> rows =
-          new ArrayList<>(groups.getOrDefault(limit.getKey(), new LinkedHashMap<>()).values());
-      final int first = Math.max(0, rows.size() - limit.getValue());
-      for (int index = first; index < rows.size(); index++) {
-        output.addRowToTable(new DefaultRow("Archive-" + rowNumber++, rows.get(index)));
-      }
-    }
+  private static BufferedDataTable copyArchive(
+      final BufferedDataTable source, final ExecutionContext execution) {
+    final BufferedDataContainer output =
+        execution.createDataContainer(source.getDataTableSpec(), true);
+    for (DataRow row : source) output.addRowToTable(row);
     output.close();
     return output.getTable();
   }
 
-  private static void addArchiveRows(
-      final BufferedDataTable table,
-      final DataTableSpec spec,
-      final Map<String, LinkedHashMap<String, DataRow>> groups)
-      throws InvalidSettingsException {
-    if (table == null) return;
-    for (DataRow row : table) {
-      final String group = PopulationState.groupKey(row, spec);
-      final String individual = PopulationState.individual(row, spec);
-      final LinkedHashMap<String, DataRow> unique =
-          groups.computeIfAbsent(group, ignored -> new LinkedHashMap<>());
-      unique.remove(individual);
-      unique.put(individual, row);
-    }
+  private static BufferedDataTable emptyArchive(
+      final DataTableSpec spec, final ExecutionContext execution) {
+    final BufferedDataContainer output = execution.createDataContainer(spec, true);
+    output.close();
+    return output.getTable();
   }
 
   // Progress summaries are optional and remain separate from stopping decisions.

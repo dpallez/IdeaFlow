@@ -18,7 +18,8 @@ Initial experimental snapshot of the IdeaFlow KNIME extension.
   calculates constraint violations, advances the number of function evaluations (NFE), and emits
   evaluation-history events.
 - Build strictly NFE-bounded optimization loops with optional objective-target stopping, accumulated progress history,
-  and an internally maintained, population-bounded replaced-parent archive for SHADE/L-SHADE donor sampling. A loop
+  and optional population-schema archive feedback for complete SHADE/L-SHADE donor sampling. The loop start emits an
+  empty compatible archive when none is connected, and the loop end returns the final archive. A loop
   stops before a complete next generation when that generation would exceed the evaluation budget.
 - Select parents with tournament, random, or Differential Evolution donor selection.
 - Apply SBX, uniform, one-point, arithmetic, DE binomial, and DE exponential crossover.
@@ -46,13 +47,15 @@ Initial experimental snapshot of the IdeaFlow KNIME extension.
 - Modern KNIME node dialogs for every registered node that requires configuration.
 - Strict current-snapshot settings and progress-table contracts; obsolete pre-release setting aliases and inferred
   progress identity fields are not retained.
-- Automated OSGi regression tests cover DE competition, canonical SHADE memory updates, migration cadence, strict
-  generation-level evaluation-budget reservation, built-in/formula evaluation result ownership, and IOHprofiler
-  improvement-log correctness, metadata, validation, and sidecar escaping.
+- Automated OSGi regression tests cover public API validation, state serialization, formulas, encodings, Pareto and
+  quality-indicator kernels, DE/SHADE behavior, strict evaluation budgets, metadata, every registered node contract,
+  deterministic operator chains, initialization and evaluation, loop archive feedback, survivor selection, migration,
+  progress analysis and plots, population traces, front comparison, and IOHprofiler output safety.
+- The authoritative Jenkins pipeline builds and tests the complete Tycho reactor, publishes JUnit results, archives
+  the p2 update site, validates release tags, and produces fingerprinted release ZIPs with SHA-256 checksums.
 
 ### Snapshot limitations
 
 - The extension is experimental and is not yet published on a public KNIME update site.
-- Continuous-integration and release workflows are not included yet.
 - Example workflows are not bundled with this snapshot.
 - CMA-ES, particle swarm optimization, ant-colony optimization, and an integrated surrogate model are not provided.

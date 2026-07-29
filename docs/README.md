@@ -14,6 +14,8 @@ Use this page as the documentation map. Each guide links back to this index and 
 | [Workflow tutorial](WORKFLOW_TUTORIAL.md) | Construct a complete workflow for the Ackley optimization problem |
 | [Sub-workflows](SUBWORKFLOWS.md) | Encapsulate and reuse KNIME workflows |
 | [Developer guide](DEVELOPMENT.md) | Extend the Java code, strategies, nodes, and recipes |
+| [Testing](TESTING.md) | Run and extend the OSGi, core, node execution, and IO regression suite |
+| [Jenkins pipeline](JENKINS.md) | Configure the authoritative build and release pipeline |
 | [Best practices](BEST_PRACTICES.md) | Keep workflows readable, reproducible, and shareable |
 | [Troubleshooting](TROUBLESHOOTING.md) | Diagnose configuration, execution, evaluation, archive, and installation issues |
 | [FAQ](FAQ.md) | Find concise answers and links to the detailed guides |

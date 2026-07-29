@@ -3,9 +3,10 @@
 <knimeNode icon="../../../default.png" type="Other">
   <name>Optimization Loop Start</name>
   <shortDescription>Starts an IdeaFlow optimization loop.</shortDescription>
-  <fullDescription><intro>Place this node after the initial population has been evaluated. The first pass starts with an empty donor archive; later passes return the active population and the SHADE/L-SHADE archive maintained internally by Optimization Loop End.</intro></fullDescription>
+  <fullDescription><intro>Place this node after the initial population has been evaluated. The first pass emits the connected initial population and archive. If no initial archive is connected, the node creates an empty archive with the population schema. Later passes emit both feedback tables retained by Optimization Loop End.</intro></fullDescription>
   <ports>
     <inPort index="0" name="Initial population">Initially evaluated population.</inPort>
+    <inPort index="1" name="Initial archive (optional)">Initial DE archive. It must use exactly the population schema.</inPort>
     <outPort index="0" name="Current population">Population for the current optimization pass.</outPort>
     <outPort index="1" name="Current archive">External DE archive for donor selection during the current pass.</outPort>
   </ports>

@@ -88,9 +88,11 @@ public final class IdeaFlowState {
     final String encoded = m_values.get(key);
     if (encoded == null || encoded.isBlank()) return new double[0];
     try {
-      final ByteBuffer input = ByteBuffer.wrap(Base64.getUrlDecoder().decode(encoded));
+      final byte[] decoded = Base64.getUrlDecoder().decode(encoded);
+      if (decoded.length < Integer.BYTES) return new double[0];
+      final ByteBuffer input = ByteBuffer.wrap(decoded);
       final int length = input.getInt();
-      if (length < 0 || input.remaining() != length * Double.BYTES) return new double[0];
+      if (length < 0 || input.remaining() != (long) length * Double.BYTES) return new double[0];
       final double[] result = new double[length];
       for (int index = 0; index < length; index++) result[index] = input.getDouble();
       return result;
