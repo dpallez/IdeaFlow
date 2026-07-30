@@ -3,6 +3,8 @@
 
 [IdeaFlow](https://github.com/dpallez/IdeaFlow) is a [KNIME Analytics Platform](https://www.knime.com/knime-analytics-platform) extension for composing population-based optimization workflows from reusable nodes.
 
+<img width="1920" height="894" alt="Knime_presentation" src="https://github.com/user-attachments/assets/12039d62-e7bc-4c02-b2cc-8acfd10023bd" />
+
 ## Documentation
 
 | Topic | Documentation |
