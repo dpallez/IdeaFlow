@@ -239,8 +239,6 @@ Before mutation, each target has a ten-percent chance of drawing a new `F` and a
 
 Rastrigin's many local minima make it a stronger adaptation test than Sphere. The analysis branch plots median best fitness with quartiles against NFE.
 
-The included CSV Writer still points to `C:\Users\Ion\Desktop\test.csv`. Remove that diagnostic node or replace the destination with a workflow-relative path before publishing or running the workflow on another machine.
-
 ## 10. SHADE on Rosenbrock
 
 [Import the workflow](<10 SHADE on Rosenbrock.knwf>)
@@ -328,7 +326,6 @@ When adapting a workflow, change one algorithmic decision at a time and keep the
 
 Before treating these files as release examples:
 
-- remove or reconfigure the personal CSV path in workflow 9;
 - correct and re-export the SHADE-family workflows if their titles are intended to denote canonical SHADE and L-SHADE;
 - validate every import and complete execution in the minimum supported KNIME version;
 - remove the temporary `testing/` source directory once the exported workflows no longer need to be inspected;
