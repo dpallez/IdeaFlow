@@ -81,14 +81,14 @@ pipeline {
             }
             steps {
                 script {
-                    if (!(env.TAG_NAME ==~ /^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$/)) {
+                    if (!env.TAG_NAME.matches('^v[0-9]+\\.[0-9]+\\.[0-9]+(-(alpha|beta|rc)\\.[0-9]+)?$')) {
                         error("Release tags must use vMAJOR.MINOR.PATCH or vMAJOR.MINOR.PATCH-PRERELEASE.NUMBER")
                     }
 
                     final String version = projectVersion()
                     final String tagVersion = env.TAG_NAME.substring(1)
                     final String prereleaseVersion = tagVersion.replaceFirst(
-                        /-(alpha|beta|rc)\.([0-9]+)$/, '.$1$2'
+                        '-(alpha|beta|rc)\\.([0-9]+)$', '.$1$2'
                     )
                     final String expectedProjectVersion = prereleaseVersion == tagVersion
                         ? "${tagVersion}.release"
