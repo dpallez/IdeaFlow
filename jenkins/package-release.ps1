@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $true)]
-    [ValidatePattern('^v[0-9]+\.[0-9]+\.[0-9]+$')]
+    [ValidatePattern('^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$')]
     [string]$Tag
 )
 

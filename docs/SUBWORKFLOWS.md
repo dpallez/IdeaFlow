@@ -23,7 +23,7 @@ Encapsulation is particularly useful for:
 
 - keeping the main workflow readable;
 - reusing exactly the same configuration across several experiments;
-- comparing several recipes from the same experiment plan;
+- comparing several operator configurations from the same experiment;
 - isolating a costly evaluation or one that depends on external resources;
 - sharing a search workflow without immediately exposing all its details on the main canvas.
 
@@ -38,7 +38,7 @@ Ports are defined using KNIME nodes designed for callable workflows, notably:
 
 Depending on its role, an IdeaFlow sub-workflow may receive:
 
-- an experiment plan;
+- a problem setup or run-parameter table;
 - a problem definition;
 - an already initialized or evaluated population;
 - a parameter table;
@@ -70,8 +70,8 @@ The workflow built in the [Ackley problem tutorial](WORKFLOW_TUTORIAL.md) can be
 
 **Inputs:**
 
-- the plan produced by **Experiment Setup**;
-- the definition produced by **Define Optimization Problem**.
+- the table produced by **Problem Setup**;
+- input data required by a custom evaluator, when applicable.
 
 **Outputs:**
 

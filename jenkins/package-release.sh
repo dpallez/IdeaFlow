@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -ne 1 || ! "$1" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    echo "Usage: package-release.sh vMAJOR.MINOR.PATCH" >&2
+if [[ $# -ne 1 || ! "$1" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$ ]]; then
+    echo "Usage: package-release.sh vMAJOR.MINOR.PATCH[-alpha.NUMBER|-beta.NUMBER|-rc.NUMBER]" >&2
     exit 2
 fi
 

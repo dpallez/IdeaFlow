@@ -58,14 +58,14 @@ mvn --batch-mode --no-transfer-progress clean verify
 
 ## Release builds
 
-A release build is created only from a tag matching `vMAJOR.MINOR.PATCH`, for example `v0.1.0`.
-Before creating the tag, the Maven project version must be finalized and must exactly match the
-tag without its leading `v`.
+A release build is created from a stable tag such as `v0.1.0` or a prerelease tag such as
+`v0.1.0-alpha.1`, `v0.1.0-beta.1`, or `v0.1.0-rc.1`. OSGi uses a four-part version, so Jenkins
+normalizes `v0.1.0-alpha.1` to `0.1.0.alpha1`. A stable `v0.1.0` maps to `0.1.0.release`, which keeps p2 ordering correct: `alpha1 < beta1 < rc1 < release`.
 
 For a release tag, Jenkins additionally:
 
 1. rejects a `-SNAPSHOT` project version;
-2. rejects a tag that does not match the Maven version;
+2. normalizes an optional prerelease qualifier and rejects a tag that does not match the Maven version;
 3. copies the generated update site to `dist/IdeaFlow-TAG-update-site.zip`;
 4. generates a SHA-256 checksum;
 5. fingerprints and archives both release files.
@@ -97,4 +97,4 @@ should not be implemented as a separate release workflow.
 - **No JUnit results:** inspect `IDEAFlow.tests/target/work/data/.metadata/.log` and the console
   output from the Tycho test runtime.
 - **Release tag rejected:** remove the snapshot suffix, update all matching Maven/OSGi versions,
-  and create a tag matching the finalized project version.
+  and create a stable or prerelease tag matching the finalized project version.

@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.ideaflow</groupId>
     <artifactId>ideaflow-releng</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0.alpha1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>org.ideaflow</artifactId>

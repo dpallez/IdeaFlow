@@ -1,65 +1,43 @@
 # Troubleshooting
 
-[Main README](../README.md) · [Documentation index](README.md) · [Overview](OVERVIEW.md) · [KNIME installation](KNIME_INSTALLATION.md) · [IdeaFlow installation](INSTALLATION.md) · [Node reference](NODES.md) · [Optimization problems](OPTIMIZATION_PROBLEMS.md) · [Workflow tutorial](WORKFLOW_TUTORIAL.md) · [Development](DEVELOPMENT.md) · [Troubleshooting](TROUBLESHOOTING.md)
-
+[Documentation index](README.md) · [Node reference](NODES.md) · [Installation](INSTALLATION.md)
 
 ## A node cannot be configured
 
-Verify that preceding nodes are configured and that the expected columns exist in their output schemas. Some dialogs can only offer variable or objective columns after upstream nodes have been configured.
+Configure upstream nodes first so KNIME can provide their output schema. IdeaFlow dialogs obtain variables, objectives, and constraints from Problem Setup metadata.
 
 ## A variable or objective cannot be found
 
-Verify the names defined in [`Define Optimization Problem`](NODES.md#define-optimization-problem) and those produced by the evaluation. Names are sensitive to spelling differences. A column declared as an objective must exist before [`Finalize Evaluation`](NODES.md#finalize-evaluation).
+Check the exact names in Problem Setup and preserve the attached table metadata. An objective or constraint result column must exist when Evaluation uses formula or upstream-column evaluation.
 
-## Candidates remain unevaluated
+## Candidates remain unevaluated or NFE does not increase
 
-Verify that:
-
-- the evaluation function produces the expected columns;
-- [`Finalize Evaluation`](NODES.md#finalize-evaluation) is placed immediately after evaluation;
-- objectives are selected in its dialog;
-- produced values are numerical and valid.
-
-## NFE does not increase correctly
-
-NFE is updated by [`Finalize Evaluation`](NODES.md#finalize-evaluation). Verify that it is executed once for each newly evaluated batch and that an already finalized population is not finalized a second time without a new evaluation.
+Pass every newly evaluated batch through Evaluation. Confirm that all declared objective and constraint results are numeric and valid. Do not remove IdeaFlow's state column or edit NFE manually.
 
 ## The loop does not stop
 
-Verify the configuration of [`Evolution Loop End`](NODES.md#evolution-loop-end): maximum number of generations, evaluation budget, and optional target. The budget can only be reached if NFE is updated correctly.
+Optimization Loop End reads the maximum-evaluations budget from the active population. Verify that the population was created from Problem Setup and passed through Evaluation. Check optional objective targets and remember that the loop stops before a complete generation that would exceed the budget.
 
-## Select Survivors produces an error
+## Elitism reports incompatible inputs
 
-Verify that:
+The first input must contain evaluated parents and the second evaluated children from the same run, population, and problem schema. Choose an update mode appropriate for the number of objectives and use DE-produced children for pairwise DE or GDE3 modes.
 
-- the first input contains the current population;
-- the second contains evaluated offspring;
-- objectives and directions are consistent;
-- the selected mode matches the number of objectives;
-- run and population identifiers are preserved;
-- columns specific to DE or multi-objective optimization are available when required by the mode.
+## The SHADE archive remains empty
 
-## Results change despite using a fixed seed
+Connect Elitism's `Rejected or replaced` output to Optimization Loop End's `Next archive` input. Connect Loop Start's `Current archive` output to Selection's archive input. Both population and archive must have exactly the same schema.
 
-Verify that all random operations use IdeaFlow seeds and that no external node introduces an uncontrolled generator. Parallelization, an external model, or a changing data source may also modify the result.
+## Selection cannot prepare DE donors
 
-## The external archive remains empty
+DE donor mode requires direct float variables and at least four active individuals per population. Use the optional archive for SHADE/L-SHADE and ensure it was produced from the same population schema.
 
-The second output of [`Select Survivors (Elitism)`](NODES.md#select-survivors-elitism) must feed [`Update Archive`](NODES.md#update-archive). When the workflow requires a reusable archive, preserve its output between generations and reconnect it to the node that consumes it, such as [`Differential Evolution`](NODES.md#differential-evolution).
+## Results differ despite a fixed seed
 
-## A sub-workflow does not receive the correct columns
+Check external nodes, data sources, parallel execution, and their own random settings. IdeaFlow's deterministic seed cannot control randomness introduced outside the extension.
 
-Compare the schemas of `Container Input (Table)` and `Container Output (Table)` ports with those expected by the calling workflow. Also verify that internal `__if_` columns have not been filtered out.
+## A called workflow loses IdeaFlow information
 
-## The extension no longer loads after an update
+Ensure callable-workflow input and output schemas preserve the state column, all `__if_` columns, and table metadata. Avoid column filters around Component or Call Workflow boundaries unless the required columns are explicitly retained.
 
-For a [manual installation](INSTALLATION.md#manual-installation-using-a-jar-file), remove older JAR versions from `dropins`, place the compatible version there, and restart KNIME. Also verify the KNIME version and Java environment being used.
+## The extension does not load after an update
 
----
-## Related documentation
-
-- [Node reference](NODES.md)
-- [IdeaFlow installation](INSTALLATION.md)
-- [KNIME installation](KNIME_INSTALLATION.md)
-- [Workflow tutorial](WORKFLOW_TUTORIAL.md)
-- [KNIME documentation](https://docs.knime.com/)
+Remove older manually installed plugin versions, install the p2 update-site ZIP through KNIME's extension mechanism, restart KNIME, and check the KNIME log. IdeaFlow currently targets KNIME 5.11 and Java 21.

@@ -1,53 +1,39 @@
 # Best Practices
 
-[Main README](../README.md) · [Documentation index](README.md) · [Overview](OVERVIEW.md) · [KNIME installation](KNIME_INSTALLATION.md) · [IdeaFlow installation](INSTALLATION.md) · [Node reference](NODES.md) · [Optimization problems](OPTIMIZATION_PROBLEMS.md) · [Workflow tutorial](WORKFLOW_TUTORIAL.md) · [Development](DEVELOPMENT.md) · [Troubleshooting](TROUBLESHOOTING.md)
+[Documentation index](README.md) · [Node reference](NODES.md) · [Examples](../ideaflow-knime/examples/EXAMPLES.md)
 
+## Keep the workflow readable
 
-## Naming nodes and workflow areas
+Use a left-to-right flow and annotations for setup, initial evaluation, generation operators, stopping, analysis, and export. Rename repeated Evaluation nodes as `Initial Evaluation` and `Offspring Evaluation`.
 
-Rename node instances when several nodes of the same type are present, for example `Initial Evaluation` and `Offspring Evaluation`. Use annotations to clearly separate setup, initial evaluation, loop, results, and export areas.
+## Define the problem once
 
-## Keeping the data flow readable
+Use one Problem Setup node as the source of run settings, variables, objectives, constraints, directions, and bounds. Connect the same setup table to every Evaluation node and preserve its attached metadata on population tables.
 
-Prefer a left-to-right reading direction, limit crossing connections, and use vertical branches for auxiliary data such as problem definitions, archives, or reference directions.
+## Preserve IdeaFlow columns
 
-## Separating the search process from the problem
+Columns prefixed with `__if_` carry identity, seed, state, NFE, generation, and population information. Do not filter or rename them unless a documented IdeaFlow node owns that transformation.
 
-The search process should remain independent from the [optimization problem](OPTIMIZATION_PROBLEMS.md) and its evaluation function. For a custom problem, produce objective and constraint columns using KNIME nodes, then use **Finalize Evaluation** as the explicit boundary between evaluation and evolution.
+## Evaluate candidates through Evaluation
 
-## Preserving internal columns
+Even when formulas or external nodes calculate the objective, use Evaluation to validate declared results, aggregate constraint violations, mark candidates as evaluated, update NFE, and emit history events. Do not manually modify evaluation-state or NFE columns.
 
-Columns prefixed with `__if_` maintain identity, seeds, evaluation state, NFE, generation, and population management. They must be preserved unless a documented IdeaFlow node is responsible for modifying them.
+## Respect the strict budget
 
-## Fixing seeds and preserving parameters
+The evaluation budget belongs to Problem Setup and Optimization Loop End treats it as a ceiling. Choose population sizes so a useful number of complete generations fits within the budget.
 
-Use [`Experiment Setup`](NODES.md#experiment-setup) to define replications and the master seed. Preserve the following information with the results:
+## Keep archives separate from survivors
 
-- IdeaFlow version;
-- KNIME version;
-- benchmark or problem definition;
-- operator parameters;
-- budget;
-- seeds;
-- stopping criteria.
+A DE archive is donor memory, not an active population. Feed it through the dedicated loop archive ports. Do not concatenate it into the active population because that would change survivor selection and evaluation accounting.
 
-## Using Finalize Evaluation once per exact evaluation
+## Make experiments reproducible
 
-An evaluation should be counted only after its objectives and constraints have been produced. Omitting **Finalize Evaluation** prevents correct NFE updates; placing it several times on the same results may distort the budget.
+Record the IdeaFlow and KNIME versions, seed, problem definition, population size, operators, stopping criteria, and evaluation budget. Fix seeds in external nodes as well.
 
-## Exporting reproducible data
+## Use the appropriate analysis output
 
-Use [`Optimization Monitor`](NODES.md#optimization-monitor), [`Population Statistics`](NODES.md#population-statistics), [`Evolution Trace`](NODES.md#evolution-trace), and [`Export Results`](NODES.md#export-results) according to the required level of detail. Exported files should not depend on a personal path when intended for sharing.
+Use Track Progress for compact per-generation summaries, Record Population for detailed snapshots, Optimization Run Analysis for repeated runs, and Export to IOHprofiler for IOH-compatible files.
 
-## Validating each search configuration with a reference workflow
+## Share portable workflows
 
-Every documented recipe should have an importable workflow, a known seed, and verifiable invariants. Stochastic results should be analyzed over multiple replications when conducting a scientific comparison.
-
----
-## Related documentation
-
-- [Optimization problems](OPTIMIZATION_PROBLEMS.md)
-- [Workflow tutorial](WORKFLOW_TUTORIAL.md)
-- [Sub-workflows](SUBWORKFLOWS.md)
-- [IOHprofiler](https://iohprofiler.github.io/)
-- [Troubleshooting](TROUBLESHOOTING.md)
+Use relative or workflow-local resources. Do not publish personal paths, credentials, generated output, or data that recipients cannot access. Re-import and execute exported workflows in the supported KNIME version.

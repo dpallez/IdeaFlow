@@ -81,18 +81,24 @@ pipeline {
             }
             steps {
                 script {
-                    if (!(env.TAG_NAME ==~ /^v[0-9]+\.[0-9]+\.[0-9]+$/)) {
-                        error("Release tags must use the form vMAJOR.MINOR.PATCH")
+                    if (!(env.TAG_NAME ==~ /^v[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$/)) {
+                        error("Release tags must use vMAJOR.MINOR.PATCH or vMAJOR.MINOR.PATCH-PRERELEASE.NUMBER")
                     }
 
                     final String version = projectVersion()
                     final String tagVersion = env.TAG_NAME.substring(1)
+                    final String prereleaseVersion = tagVersion.replaceFirst(
+                        /-(alpha|beta|rc)\.([0-9]+)$/, '.$1$2'
+                    )
+                    final String expectedProjectVersion = prereleaseVersion == tagVersion
+                        ? "${tagVersion}.release"
+                        : prereleaseVersion
 
                     if (version.endsWith("-SNAPSHOT")) {
                         error("The project version is still ${version}; finalize it before tagging a release")
                     }
-                    if (version != tagVersion) {
-                        error("Tag ${env.TAG_NAME} does not match project version ${version}")
+                    if (version != expectedProjectVersion) {
+                        error("Tag ${env.TAG_NAME} expects project version ${expectedProjectVersion}, but found ${version}")
                     }
                 }
             }

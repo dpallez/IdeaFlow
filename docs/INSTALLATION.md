@@ -208,7 +208,7 @@ Crossover
 ```
 
 ```text
-Select Parents
+Selection
 ```
 
 If the installation is successful, the extension nodes should appear in the Node Repository.
@@ -240,11 +240,13 @@ Each node can then be added to a workflow by dragging and dropping it onto the c
 Once the extension is installed, IdeaFlow nodes appear in the Node Repository under the categories declared by the extension:
 
 - `Setup`;
-- `Evolution`;
+- `Loops`;
+- `Operators`;
 - `Evaluation`;
-- `Results`;
-- `Advanced`;
-- `Advanced / Utilities`.
+- `Multi-Objective`;
+- `Multiple Populations`;
+- `Analysis`;
+- `Export`.
 
 <!-- Planned image: screenshot of the full category containing IdeaFlow nodes. -->
 

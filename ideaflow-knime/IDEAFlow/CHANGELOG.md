@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.1.0-SNAPSHOT
+## 0.1.0-alpha.1
 
-Initial experimental snapshot of the IdeaFlow KNIME extension.
+First alpha release of the IdeaFlow KNIME extension.
 
 ### Available in the KNIME node repository
 
@@ -54,8 +54,8 @@ Initial experimental snapshot of the IdeaFlow KNIME extension.
 - The authoritative Jenkins pipeline builds and tests the complete Tycho reactor, publishes JUnit results, archives
   the p2 update site, validates release tags, and produces fingerprinted release ZIPs with SHA-256 checksums.
 
-### Snapshot limitations
+### Alpha limitations
 
 - The extension is experimental and is not yet published on a public KNIME update site.
-- Example workflows are not bundled with this snapshot.
+- Example workflows are not bundled with this alpha release.
 - CMA-ES, particle swarm optimization, ant-colony optimization, and an integrated surrogate model are not provided.

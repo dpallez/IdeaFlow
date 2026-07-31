@@ -2,13 +2,13 @@
 <feature
       id="org.ideaflow.feature"
       label="IdeaFlow Evolutionary Optimization"
-      version="0.1.0.qualifier"
-      provider-name="IdeaFlow contributors">
+      version="0.1.0.alpha1"
+      provider-name="Cazacu Ion, Benjamin Foulcher, Denis Pallez">
    <description>
       General-purpose, workflow-native evolutionary and metaheuristic optimization for KNIME.
    </description>
    <copyright>
-      Copyright (c) 2026 IdeaFlow contributors.
+      Copyright (c) 2026 Denis Pallez.
    </copyright>
    <license url="https://www.apache.org/licenses/LICENSE-2.0">
       Licensed under the Apache License, Version 2.0.
@@ -17,6 +17,6 @@
          id="org.ideaflow"
          download-size="0"
          install-size="0"
-         version="0.1.0.qualifier"
+         version="0.1.0.alpha1"
          unpack="false"/>
 </feature>
