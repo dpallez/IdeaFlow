@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0-alpha.1
+## 0.1.0-alpha.1 - 2026-07-31
 
 First alpha release of the IdeaFlow KNIME extension.
 
