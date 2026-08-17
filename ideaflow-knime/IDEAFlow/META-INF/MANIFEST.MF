@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: IDEAFlow-Node extension for KNIME Workbench
 Bundle-SymbolicName: org.ideaflow; singleton:=true
-Bundle-Version: 0.1.0.alpha1
+Bundle-Version: 0.1.0.alpha2
 Bundle-ClassPath: ideaflow.jar
 Bundle-Activator: org.ideaflow.IdeaFlowNodePlugin
 Bundle-Vendor: Cazacu Ion, Benjamin Foulcher, Denis Pallez

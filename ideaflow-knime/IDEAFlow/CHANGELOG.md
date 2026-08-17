@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.0-alpha.2 - 2026-08-17
+
+Second alpha release of the IdeaFlow KNIME extension.
+
+### Fixed
+
+- Corrected the optimization-loop connections in the example workflows for the current population, progress-summary,
+  and optional archive ports.
+- Connected archive feedback in the SHADE and L-SHADE examples while keeping algorithms that do not use a DE archive
+  on the population-only Selection input.
+- Allowed Selection to accept archive tables with the same ordered column names and types when KNIME-derived metadata,
+  such as the observed fitness domain, differs from the active population.
+- Removed the personal CSV Writer configuration from the jDE example.
+
+### Tests
+
+- Added an OSGi regression test for Selection archives with compatible columns and different KNIME metadata.
+- The Tycho test suite now runs 80 tests.
+
 ## 0.1.0-alpha.1 - 2026-07-31
 
 First alpha release of the IdeaFlow KNIME extension.

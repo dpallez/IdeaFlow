@@ -1,5 +1,6 @@
 package org.ideaflow.nodes;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -7,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import org.ideaflow.api.IdeaFlowState;
+import org.ideaflow.knime.KnimeTableSupport;
 import org.ideaflow.knime.PopulationState;
 import org.ideaflow.nodes.selection.SelectionNodeFactory;
 import org.ideaflow.nodes.variation.mutation.MutationNodeFactory;
@@ -15,6 +17,7 @@ import org.ideaflow.testing.NodeTestHarness;
 import org.ideaflow.testing.TestPopulation;
 import org.junit.jupiter.api.Test;
 import org.knime.core.data.DataCell;
+import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataRow;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.DoubleValue;
@@ -54,6 +57,27 @@ final class OperatorChainNodeTest {
         assertFalse(
             PopulationState.get(row, spec).booleanValue(IdeaFlowState.EVALUATED, true));
       }
+    }
+  }
+
+  @Test
+  void selectionAcceptsArchiveWithCompatibleColumnsAndDifferentMetadata() throws Exception {
+    try (NodeTestHarness selection = new NodeTestHarness(new SelectionNodeFactory())) {
+      final NodeSettings settings = selection.settings();
+      settings.addString("selection_strategy", "DE_DONORS");
+      selection.loadSettings(settings);
+
+      final DataTableSpec population = TestPopulation.spec();
+      final DataColumnSpec[] archiveColumns = new DataColumnSpec[population.getNumColumns()];
+      for (int index = 0; index < archiveColumns.length; index++) {
+        archiveColumns[index] = population.getColumnSpec(index);
+      }
+
+      // The archive may have different KNIME metadata even when its columns are compatible.
+      archiveColumns[0] = KnimeTableSupport.doubleColumn("x");
+      final DataTableSpec archive = new DataTableSpec(archiveColumns);
+
+      assertDoesNotThrow(() -> selection.configure(population, archive));
     }
   }
 

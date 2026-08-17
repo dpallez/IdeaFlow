@@ -72,33 +72,6 @@ public final class KnimeTableSupport {
     return indices;
   }
 
-  /** Requires two tables to have the same ordered columns, types, domains, and properties. */
-  public static void requireSameSchema(
-      final DataTableSpec expected, final DataTableSpec actual, final String label)
-      throws InvalidSettingsException {
-    if (expected == null || actual == null) return;
-    if (expected.getNumColumns() != actual.getNumColumns()) {
-      throw new InvalidSettingsException(
-          label
-              + " must have exactly the population schema: expected "
-              + expected.getNumColumns()
-              + " columns but found "
-              + actual.getNumColumns()
-              + ".");
-    }
-    for (int index = 0; index < expected.getNumColumns(); index++) {
-      if (!expected.getColumnSpec(index).equals(actual.getColumnSpec(index))) {
-        throw new InvalidSettingsException(
-            label
-                + " must have exactly the population schema. "
-                + "The first mismatch is column "
-                + index
-                + " ('"
-                + expected.getColumnSpec(index).getName()
-                + "').");
-      }
-    }
-  }
 
   /** Requires the same ordered column names and types, while allowing different domain metadata. */
   public static void requireCompatibleSchema(

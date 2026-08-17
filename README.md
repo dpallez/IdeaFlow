@@ -54,7 +54,7 @@ Definitions and references are collected in [Optimization Problems and Benchmark
 
 ## Project status
 
-The current version is IdeaFlow 0.1.0 Alpha 1. The extension is built as an Eclipse p2 update site and currently targets KNIME Analytics Platform 5.11 with Java 21. Jenkins is the authoritative build and release pipeline.
+The current version is IdeaFlow 0.1.0 Alpha 2. The extension is built as an Eclipse p2 update site and currently targets KNIME Analytics Platform 5.11 with Java 21. Jenkins is the authoritative build and release pipeline.
 
 ## Acknowledgements
 

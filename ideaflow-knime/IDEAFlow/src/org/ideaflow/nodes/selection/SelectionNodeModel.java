@@ -423,7 +423,7 @@ final class SelectionNodeModel extends NodeModel {
 
   private static void validateArchive(final DataTableSpec archive, final DataTableSpec population)
       throws InvalidSettingsException {
-    KnimeTableSupport.requireSameSchema(population, archive, "Selection archive");
+    KnimeTableSupport.requireCompatibleSchema(population, archive, "Selection archive");
     final List<String> variables = directFloatVariables(ProblemMetadata.require(population));
     KnimeTableSupport.requireNumericColumns(archive, variables);
     PopulationState.requireVisibleColumns(archive);
