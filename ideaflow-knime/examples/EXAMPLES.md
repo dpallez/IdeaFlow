@@ -328,7 +328,6 @@ Before treating these files as release examples:
 
 - correct and re-export the SHADE-family workflows if their titles are intended to denote canonical SHADE and L-SHADE;
 - validate every import and complete execution in the minimum supported KNIME version;
-- remove the temporary `testing/` source directory once the exported workflows no longer need to be inspected;
 - keep the `.knwf` exports free of execution data, credentials, and machine-specific paths.
 
 ---

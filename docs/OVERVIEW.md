@@ -113,7 +113,7 @@ Selection -> Crossover -> Mutation -> Evaluation -> Replacement
 
 A search method determines how candidate solutions are proposed, modified, and selected. An optimization problem defines the decision variables, objectives, constraints, and domain.
 
-- Named methods and their research papers are listed once in [Implemented algorithms](../README.md#implemented-algorithms).
+- Named methods are listed in [Supported workflow families](../README.md#supported-workflow-families) and demonstrated in the [example workflow catalogue](../ideaflow-knime/examples/EXAMPLES.md).
 - Built-in problems are documented in [Optimization Problems and Benchmarks](OPTIMIZATION_PROBLEMS.md).
 - The practical example is documented as an [Ackley optimization workflow](WORKFLOW_TUTORIAL.md), with the optimization problem clearly separated from the selected search operators.
 
@@ -144,7 +144,7 @@ Using sub-workflows makes algorithms easier to read, more modular, and easier to
 ---
 ## Related documentation
 
-- [Implemented algorithms and research papers](../README.md#implemented-algorithms)
+- [Supported workflow families and implemented methods](../README.md#supported-workflow-families)
 - [Optimization problems and benchmarks](OPTIMIZATION_PROBLEMS.md)
 - [Node reference](NODES.md)
 - [Workflow tutorial](WORKFLOW_TUTORIAL.md)
